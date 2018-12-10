@@ -1541,7 +1541,7 @@
         </member>
         <member name="T:DiscordRPC.RPC.RpcConnection">
             <summary>
-            Communicates between the client and discord through RPC
+            Communicates between the client and Discord through RPC.
             </summary>
         </member>
         <member name="F:DiscordRPC.RPC.RpcConnection.VERSION">
@@ -1607,7 +1607,7 @@
         </member>
         <member name="M:DiscordRPC.RPC.RpcConnection.EnqueueMessage(DiscordRPC.Message.IMessage)">
             <summary>
-            Adds a message to the message queue. Does not copy the message, so besure to copy it yourself or dereference it.
+            Adds a message to the message queue. Does not copy the message, so be sure to copy it yourself or dereference it.
             </summary>
             <param name="message">The message to add</param>
         </member>

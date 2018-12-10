@@ -3,7 +3,6 @@ using DiscordRPC.Exceptions;
 using DiscordRPC.IO;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
-using DiscordRPC.Registry;
 using DiscordRPC.RPC;
 using DiscordRPC.RPC.Commands;
 using System;
@@ -177,38 +176,7 @@ namespace DiscordRPC
 		/// </summary>
 		/// <param name="applicationID"></param>
 		public DiscordRpcClient(string applicationID) : this(applicationID, -1) { }
-
-		/// <summary>
-		/// Creates a new Discord RPC Client without using any uri scheme. This will disable the Join / Spectate functionality.
-		/// </summary>
-		/// <param name="applicationID"></param>	
-		/// <param name="pipe">The pipe to connect too. -1 for first available pipe.</param>
-		public DiscordRpcClient(string applicationID, int pipe) : this(applicationID, null, false, pipe) { }
-
-
-		/// <summary>
-		/// Creates a new Discord RPC Client using the default uri scheme.
-		/// </summary>
-		/// <param name="applicationID">The ID of the application created at discord's developers portal.</param>
-		/// <param name="registerUriScheme">Should a URI scheme be registered for Join / Spectate functionality? If false, the Join / Spectate functionality will be disabled.</param>
-		public DiscordRpcClient(string applicationID, bool registerUriScheme) : this(applicationID, registerUriScheme, -1) { }
-
-		/// <summary>
-		/// Creates a new Discord RPC Client using the default uri scheme.
-		/// </summary>
-		/// <param name="applicationID">The ID of the application created at discord's developers portal.</param>
-		/// <param name="registerUriScheme">Should a URI scheme be registered for Join / Spectate functionality? If false, the Join / Spectate functionality will be disabled.</param>
-		/// <param name="pipe">The pipe to connect too. -1 for first available pipe.</param>
-		public DiscordRpcClient(string applicationID, bool registerUriScheme, int pipe) : this(applicationID, null, registerUriScheme, pipe) { }
-
-		/// <summary>
-		/// Creates a new Discord RPC Client using the steam uri scheme.
-		/// </summary>
-		/// <param name="applicationID">The ID of the application created at discord's developers portal.</param>
-		/// <param name="steamID">The steam ID of the app. This is used to launch Join / Spectate through steam URI scheme instead of manual launching</param>
-		/// <param name="pipe">The pipe to connect too. -1 for first available pipe.</param>	
-		public DiscordRpcClient(string applicationID, string steamID, bool registerUriScheme) : this(applicationID, steamID, registerUriScheme, -1) { }
-
+        
 		/// <summary>
 		/// Creates a new Discord RPC Client using the steam uri scheme.
 		/// </summary>
@@ -216,7 +184,7 @@ namespace DiscordRPC
 		/// <param name="steamID">The steam ID of the app. This is used to launch Join / Spectate through steam URI scheme instead of manual launching</param>
 		/// <param name="registerUriScheme">Should a URI scheme be registered for Join / Spectate functionality? If false, the Join / Spectate functionality will be disabled.</param>
 		/// <param name="pipe">The pipe to connect too. -1 for first available pipe.</param>
-		public DiscordRpcClient(string applicationID, string steamID, bool registerUriScheme, int pipe) : this(applicationID, steamID, registerUriScheme, pipe, new ManagedNamedPipeClient()) { }
+		public DiscordRpcClient(string applicationID, int pipe) : this(applicationID, pipe, new ManagedNamedPipeClient()) { }
 
 		/// <summary>
 		/// Creates a new Discord RPC Client using the steam uri scheme.
@@ -226,21 +194,14 @@ namespace DiscordRPC
 		/// <param name="registerUriScheme">Should a URI scheme be registered for Join / Spectate functionality? If false, the Join / Spectate functionality will be disabled.</param>
 		/// <param name="pipe">The pipe to connect too. -1 for first available pipe.</param>
 		/// <param name="client">The pipe client to use and communicate to discord through</param>
-		public DiscordRpcClient(string applicationID, string steamID, bool registerUriScheme, int pipe, INamedPipeClient client)
+		public DiscordRpcClient(string applicationID, int pipe, INamedPipeClient client)
 		{
 
 			//Store our values
 			ApplicationID = applicationID;
-			SteamID = steamID;
-			HasRegisteredUriScheme = registerUriScheme;
+			HasRegisteredUriScheme = false;
 			ProcessID = System.Diagnostics.Process.GetCurrentProcess().Id;
 			_pipe = pipe;
-
-			//If we are to register the URI scheme, do so.
-			//The UriScheme.RegisterUriScheme function takes steamID as a optional parameter, its null by default.
-			//   this means it will handle a null steamID for us :)
-			if (registerUriScheme)
-				UriScheme.RegisterUriScheme(applicationID, steamID);
 
 			//Create the RPC client
 			connection = new RpcConnection(ApplicationID, ProcessID, TargetPipe, client) { ShutdownOnly = _shutdownOnly };
