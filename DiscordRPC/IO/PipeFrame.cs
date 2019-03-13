@@ -22,31 +22,31 @@ namespace DiscordRPC.IO
 		/// </summary>
 		public Opcode Opcode { get; set; }
 
-		/// <summary>
-		/// The length of the frame data
-		/// </summary>
-		public uint Length { get { return (uint) Data.Length; } }
+        /// <summary>
+        /// The length of the frame data
+        /// </summary>
+        public uint Length => (uint)Data.Length;
 
-		/// <summary>
-		/// The data in the frame
-		/// </summary>
-		public byte[] Data { get; set; }
+        /// <summary>
+        /// The data in the frame
+        /// </summary>
+        public byte[] Data { get; set; }
 		
 		/// <summary>
 		/// The data represented as a string.
 		/// </summary>
 		public string Message
-		{
-			get { return GetMessage(); }
-			set { SetMessage(value); }
-		}
-		
-		/// <summary>
-		/// Creates a new pipe frame instance
-		/// </summary>
-		/// <param name="opcode">The opcode of the frame</param>
-		/// <param name="data">The data of the frame that will be serialized as JSON</param>
-		public PipeFrame(Opcode opcode, object data)
+        {
+            get => GetMessage();
+            set => SetMessage(value);
+        }
+
+        /// <summary>
+        /// Creates a new pipe frame instance
+        /// </summary>
+        /// <param name="opcode">The opcode of the frame</param>
+        /// <param name="data">The data of the frame that will be serialized as JSON</param>
+        public PipeFrame(Opcode opcode, object data)
 		{
 			//Set the opcode and a temp field for data
 			Opcode = opcode;
@@ -56,16 +56,16 @@ namespace DiscordRPC.IO
 			SetObject(data);
 		}
 
-		/// <summary>
-		/// Gets the encoding used for the pipe frames
-		/// </summary>
-		public Encoding MessageEncoding { get { return Encoding.UTF8; } }
+        /// <summary>
+        /// Gets the encoding used for the pipe frames
+        /// </summary>
+        public Encoding MessageEncoding => Encoding.UTF8;
 
-		/// <summary>
-		/// Sets the data based of a string
-		/// </summary>
-		/// <param name="str"></param>
-		private void SetMessage(string str) { Data = MessageEncoding.GetBytes(str); }
+        /// <summary>
+        /// Sets the data based of a string
+        /// </summary>
+        /// <param name="str"></param>
+        private void SetMessage(string str) { Data = MessageEncoding.GetBytes(str); }
 
 		/// <summary>
 		/// Gets a string based of the data
@@ -170,7 +170,7 @@ namespace DiscordRPC.IO
 			//Make sure we actually have a valid value
 			if (cnt != 4)
 			{
-				value = default(uint);
+				value = default;
 				return false;
 			}
 

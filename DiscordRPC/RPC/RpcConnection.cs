@@ -40,16 +40,26 @@ namespace DiscordRPC.RPC
 		/// The logger used by the RPC connection
 		/// </summary>
 		public ILogger Logger
-		{
-			get { return _logger; }
-			set
-			{
-				_logger = value;
-				if (namedPipe != null)
-					namedPipe.Logger = value;
-			}
-		}
-		private ILogger _logger;
+        {
+            get => _logger;
+            set
+            {
+                _logger = value;
+                if (namedPipe != null)
+                    namedPipe.Logger = value;
+            }
+        }
+
+        public string ThreadName
+        {
+            get => _threadName;
+            set
+            {
+                _threadName = value;
+                if (thread != null)
+                    thread.Name = _threadName;
+            }
+        }
 
 		#region States
 
@@ -69,29 +79,31 @@ namespace DiscordRPC.RPC
 
 		private volatile bool aborting = false;
 		private volatile bool shutdown = false;
-		
-		/// <summary>
-		/// Indicates if the RPC connection is still running in the background
-		/// </summary>
-		public bool IsRunning { get { return thread != null; } }
 
-		/// <summary>
-		/// Forces the <see cref="Close"/> to call <see cref="Shutdown"/> instead, safely saying goodbye to Discord. 
-		/// <para>This option helps prevents ghosting in applications where the Process ID is a host and the game is executed within the host (ie: the Unity3D editor). This will tell Discord that we have no presence and we are closing the connection manually, instead of waiting for the process to terminate.</para>
-		/// </summary>
-		public bool ShutdownOnly { get; set; }
+        /// <summary>
+        /// Indicates if the RPC connection is still running in the background
+        /// </summary>
+        public bool IsRunning => thread != null;
 
-		#endregion
+        /// <summary>
+        /// Forces the <see cref="Close"/> to call <see cref="Shutdown"/> instead, safely saying goodbye to Discord. 
+        /// <para>This option helps prevents ghosting in applications where the Process ID is a host and the game is executed within the host (ie: the Unity3D editor). This will tell Discord that we have no presence and we are closing the connection manually, instead of waiting for the process to terminate.</para>
+        /// </summary>
+        public bool ShutdownOnly { get; set; }
 
-		#region Privates
+        #endregion
 
-		private string applicationID;					//ID of the Discord APP
+        #region Privates
+
+        private ILogger _logger;
+        private string applicationID;					//ID of the Discord APP
 		private int processID;							//ID of the process to track
 
 		private long nonce;								//Current command index
 
+        private string _threadName = "Discord IPC";
 		private Thread thread;							//The current thread
-		private INamedPipeClient namedPipe;
+        private INamedPipeClient namedPipe;
 
 		private int targetPipe;							    //The pipe to taget. Leave as -1 for any available pipe.
 
@@ -716,7 +728,7 @@ namespace DiscordRPC.RPC
 
 			//Start the thread up
 			thread = new Thread(MainLoop);
-			thread.Name = "Discord IPC Thread";
+            thread.Name = _threadName;
 			thread.IsBackground = true;
 			thread.Start();
 

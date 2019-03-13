@@ -11,6 +11,7 @@ namespace DiscordRPC.Registry
     internal class UnixUriSchemeCreator : IUriSchemeCreator
     {
         private ILogger logger;
+
         public UnixUriSchemeCreator(ILogger logger)
         {
             this.logger = logger;

@@ -12,11 +12,11 @@ namespace DiscordRPC.Message
 		/// </summary>
 		public abstract MessageType Type { get; }
 
-		/// <summary>
-		/// The time the message was created
-		/// </summary>
-		public DateTime TimeCreated { get { return _timecreated; } }
-		private DateTime _timecreated;
+        /// <summary>
+        /// The time the message was created
+        /// </summary>
+        public DateTime TimeCreated => _timecreated;
+        private DateTime _timecreated;
 
 		/// <summary>
 		/// Creates a new instance of the message

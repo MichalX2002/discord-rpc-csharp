@@ -18,17 +18,17 @@ namespace DiscordRPC.Helper
 		/// </summary>
 		public int Minimum { get; private set; }
 
-		/// <summary>
-		/// The current time of the backoff
-		/// </summary>
-		public int Current { get { return _current; } }
-		private int _current;
+        /// <summary>
+        /// The current time of the backoff
+        /// </summary>
+        public int Current => _current;
+        private int _current;
 
-		/// <summary>
-		/// The current number of failures
-		/// </summary>
-		public int Fails { get { return _fails; } }
-		private int _fails;
+        /// <summary>
+        /// The current number of failures
+        /// </summary>
+        public int Fails => _fails;
+        private int _fails;
 
 		/// <summary>
 		/// The random generator

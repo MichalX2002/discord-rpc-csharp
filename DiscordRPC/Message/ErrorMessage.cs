@@ -7,15 +7,15 @@ namespace DiscordRPC.Message
 	/// </summary>
 	public class ErrorMessage : IMessage
 	{
-		/// <summary>
-		/// The type of message received from discord
-		/// </summary>
-		public override MessageType Type { get { return MessageType.Error; } }
+        /// <summary>
+        /// The type of message received from discord
+        /// </summary>
+        public override MessageType Type => MessageType.Error;
 
-		/// <summary>
-		/// The Discord error code.
-		/// </summary>
-		[JsonProperty("code")]
+        /// <summary>
+        /// The Discord error code.
+        /// </summary>
+        [JsonProperty("code")]
 		public ErrorCode Code { get; internal set; }
 
 		/// <summary>

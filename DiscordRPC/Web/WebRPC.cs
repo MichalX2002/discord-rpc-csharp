@@ -163,22 +163,22 @@ namespace DiscordRPC.Web
 		private string _json;
 		private Dictionary<string, string> _headers;
 
-		/// <summary>
-		/// The URL to send the POST request too
-		/// </summary>
-		public string URL { get { return _url; } }
+        /// <summary>
+        /// The URL to send the POST request too
+        /// </summary>
+        public string URL => _url;
 
-		/// <summary>
-		/// The JSON formatted body to send with the POST request
-		/// </summary>
-		public string Data { get { return _json; } }
+        /// <summary>
+        /// The JSON formatted body to send with the POST request
+        /// </summary>
+        public string Data => _json;
 
-		/// <summary>
-		/// The headers to send with the body
-		/// </summary>
-		public Dictionary<string, string> Headers { get { return _headers; } }
+        /// <summary>
+        /// The headers to send with the body
+        /// </summary>
+        public Dictionary<string, string> Headers => _headers;
 
-		internal WebRequest(string url, string json)
+        internal WebRequest(string url, string json)
 		{
 			_url = url;
 			_json = json;

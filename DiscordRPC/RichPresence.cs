@@ -19,15 +19,15 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("state", NullValueHandling = NullValueHandling.Ignore)]
 		public string State
-		{
-			get { return _state; }
-			set
-			{
-				if (!ValidateString(value, out _state, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException("State", 0, 128);
-			}
-		}
-		private string _state;
+        {
+            get => _state;
+            set
+            {
+                if (!ValidateString(value, out _state, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException("State", 0, 128);
+            }
+        }
+        private string _state;
 
 		/// <summary>
 		/// What the user is currently doing. For example, "Competitive - Total Mayhem".
@@ -35,15 +35,15 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("details", NullValueHandling = NullValueHandling.Ignore)]
 		public string Details
-		{
-			get { return _details; }
-			set 
-			{
-				if (!ValidateString(value, out _details, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException(128);
-			}
-		}
-		private string _details;
+        {
+            get => _details;
+            set
+            {
+                if (!ValidateString(value, out _details, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException(128);
+            }
+        }
+        private string _details;
 		
 		/// <summary>
 		/// The time elapsed / remaining time data.
@@ -342,15 +342,15 @@ namespace DiscordRPC
 		[Obsolete("This feature has been deprecated my Mason in issue #152 on the offical library. Was originally used as a Notify Me feature, it has been replaced with Join / Spectate.")]
 		[JsonProperty("match", NullValueHandling = NullValueHandling.Ignore)]
 		public string MatchSecret
-		{
-			get { return _matchSecret; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _matchSecret, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException(128);
-			}
-		}
-		private string _matchSecret;
+        {
+            get => _matchSecret;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _matchSecret, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException(128);
+            }
+        }
+        private string _matchSecret;
 
 
 		/// <summary>
@@ -362,15 +362,15 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("join", NullValueHandling = NullValueHandling.Ignore)]
 		public string JoinSecret
-		{
-			get { return _joinSecret; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _joinSecret, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException(128);
-			}
-		}
-		private string _joinSecret;
+        {
+            get => _joinSecret;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _joinSecret, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException(128);
+            }
+        }
+        private string _joinSecret;
 
 		/// <summary>
 		/// The secret data that will tell the client how to connect to the game to spectate. This could be a unique identifier for a fancy match maker or player id, lobby id, etc.
@@ -381,34 +381,34 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("spectate", NullValueHandling = NullValueHandling.Ignore)]
 		public string SpectateSecret
-		{
-			get { return _spectateSecret; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _spectateSecret, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException(128);
-			}
-		}
-		private string _spectateSecret;
+        {
+            get => _spectateSecret;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _spectateSecret, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException(128);
+            }
+        }
+        private string _spectateSecret;
 
-		#region Statics
-				
-		/// <summary>
-		/// The encoding the secret generator is using
-		/// </summary>
-		public static Encoding Encoding { get { return Encoding.UTF8; } }
+        #region Statics
 
-		/// <summary>
-		/// The length of a secret in bytes.
-		/// </summary>
-		public static int SecretLength { get { return 128; } }
+        /// <summary>
+        /// The encoding the secret generator is using
+        /// </summary>
+        public static Encoding Encoding => Encoding.UTF8;
 
-		/// <summary>
-		/// Creates a new secret. This is NOT a cryptographic function and should NOT be used for sensitive information. This is mainly provided as a way to generate quick IDs.
-		/// </summary>
-		/// <param name="random">The random to use</param>
-		/// <returns>Returns a <see cref="SecretLength"/> sized string with random characters from <see cref="Encoding"/></returns>
-		public static string CreateSecret(Random random)
+        /// <summary>
+        /// The length of a secret in bytes.
+        /// </summary>
+        public static int SecretLength => 128;
+
+        /// <summary>
+        /// Creates a new secret. This is NOT a cryptographic function and should NOT be used for sensitive information. This is mainly provided as a way to generate quick IDs.
+        /// </summary>
+        /// <param name="random">The random to use</param>
+        /// <returns>Returns a <see cref="SecretLength"/> sized string with random characters from <see cref="Encoding"/></returns>
+        public static string CreateSecret(Random random)
 		{
 			//Prepare an array and fill it with random bytes
 			// THIS IS NOT SECURE! DO NOT USE THIS FOR PASSWORDS!
@@ -450,18 +450,18 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("large_image", NullValueHandling = NullValueHandling.Ignore)]
 		public string LargeImageKey
-		{
-			get { return _largeimagekey; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _largeimagekey, 32, Encoding.UTF8))
-					throw new StringOutOfRangeException(32);
+        {
+            get => _largeimagekey;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _largeimagekey, 32, Encoding.UTF8))
+                    throw new StringOutOfRangeException(32);
 
-				//Reset the large image ID
-				_largeimageID = null;
-			}
-		}
-		private string _largeimagekey;
+                //Reset the large image ID
+                _largeimageID = null;
+            }
+        }
+        private string _largeimagekey;
 
 		/// <summary>
 		/// The tooltip for the large square image. For example, "Summoners Rift" or "Horizon Lunar Colony".
@@ -469,15 +469,15 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("large_text", NullValueHandling = NullValueHandling.Ignore)]
 		public string LargeImageText
-		{
-			get { return _largeimagetext; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _largeimagetext, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException(128);
-			}
-		}
-		private string _largeimagetext;
+        {
+            get => _largeimagetext;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _largeimagetext, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException(128);
+            }
+        }
+        private string _largeimagetext;
 
 
 		/// <summary>
@@ -486,18 +486,18 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("small_image", NullValueHandling = NullValueHandling.Ignore)]
 		public string SmallImageKey
-		{
-			get { return _smallimagekey; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _smallimagekey, 32, Encoding.UTF8))
-					throw new StringOutOfRangeException(32);
+        {
+            get => _smallimagekey;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _smallimagekey, 32, Encoding.UTF8))
+                    throw new StringOutOfRangeException(32);
 
-				//Reset the small image id
-				_smallimageID = null;
-			}
-		}
-		private string _smallimagekey;
+                //Reset the small image id
+                _smallimageID = null;
+            }
+        }
+        private string _smallimagekey;
 
 		/// <summary>
 		/// The tooltip for the small circle image. For example, "LvL 6" or "Ultimate 85%".
@@ -505,29 +505,29 @@ namespace DiscordRPC
 		/// </summary>
 		[JsonProperty("small_text", NullValueHandling = NullValueHandling.Ignore)]
 		public string SmallImageText
-		{
-			get { return _smallimagetext; }
-			set
-			{
-				if (!RichPresence.ValidateString(value, out _smallimagetext, 128, Encoding.UTF8))
-					throw new StringOutOfRangeException(128);
-			}
-		}
-		private string _smallimagetext;
+        {
+            get => _smallimagetext;
+            set
+            {
+                if (!RichPresence.ValidateString(value, out _smallimagetext, 128, Encoding.UTF8))
+                    throw new StringOutOfRangeException(128);
+            }
+        }
+        private string _smallimagetext;
 
-		/// <summary>
-		/// The ID of the large image. This is only set after Update Presence and will automatically become null when <see cref="LargeImageKey"/> is changed.
-		/// </summary>
-		[JsonIgnore]
-		public ulong? LargeImageID { get { return _largeimageID; } }
-		private ulong? _largeimageID;
+        /// <summary>
+        /// The ID of the large image. This is only set after Update Presence and will automatically become null when <see cref="LargeImageKey"/> is changed.
+        /// </summary>
+        [JsonIgnore]
+        public ulong? LargeImageID => _largeimageID;
+        private ulong? _largeimageID;
 
-		/// <summary>
-		/// The ID of the small image. This is only set after Update Presence and will automatically become null when <see cref="SmallImageKey"/> is changed.
-		/// </summary>
-		[JsonIgnore]
-		public ulong? SmallImageID { get { return _smallimageID; } }
-		private ulong? _smallimageID;
+        /// <summary>
+        /// The ID of the small image. This is only set after Update Presence and will automatically become null when <see cref="SmallImageKey"/> is changed.
+        /// </summary>
+        [JsonIgnore]
+        public ulong? SmallImageID => _smallimageID;
+        private ulong? _smallimageID;
 
 		/// <summary>
 		/// Merges this asset with the other, taking into account for ID's instead of keys.
@@ -572,7 +572,7 @@ namespace DiscordRPC
 	public class Timestamps
     {
         /// <summary> Creates a new timestamp for now. </summary>
-        public static Timestamps Now { get { return new Timestamps(DateTime.UtcNow); } }
+        public static Timestamps Now => new Timestamps(DateTime.UtcNow);
 
         /// <summary>
         /// Creates a new timestamp starting at UtcNow and ending in the supplied timespan
@@ -632,17 +632,11 @@ namespace DiscordRPC
         /// </summary>
         [JsonProperty("start", NullValueHandling = NullValueHandling.Ignore)]
 		public ulong? StartUnixMilliseconds
-		{
-			get
-			{
-				return Start.HasValue ? ToUnixMilliseconds(Start.Value) : (ulong?)null;
-			}
+        {
+            get => Start.HasValue ? ToUnixMilliseconds(Start.Value) : (ulong?)null;
 
-			set
-			{
-				Start = value.HasValue ? FromUnixMilliseconds(value.Value) : (DateTime?)null;
-			}
-		}
+            set => Start = value.HasValue ? FromUnixMilliseconds(value.Value) : (DateTime?)null;
+        }
 
 
         /// <summary>
@@ -651,24 +645,18 @@ namespace DiscordRPC
         /// </summary>
 		[JsonProperty("end", NullValueHandling = NullValueHandling.Ignore)]
 		public ulong? EndUnixMilliseconds
-		{
-			get
-			{
-				return End.HasValue ? ToUnixMilliseconds(End.Value) : (ulong?)null;
-			}
+        {
+            get => End.HasValue ? ToUnixMilliseconds(End.Value) : (ulong?)null;
 
-			set
-			{
-				End = value.HasValue ? FromUnixMilliseconds(value.Value) : (DateTime?)null;
-			}
-		}
-		
-		/// <summary>
-		/// Converts a Unix Epoch time into a <see cref="DateTime"/>.
-		/// </summary>
-		/// <param name="unixTime">The time in milliseconds since 1970 / 01 / 01</param>
-		/// <returns></returns>
-		public static DateTime FromUnixMilliseconds(ulong unixTime)
+            set => End = value.HasValue ? FromUnixMilliseconds(value.Value) : (DateTime?)null;
+        }
+
+        /// <summary>
+        /// Converts a Unix Epoch time into a <see cref="DateTime"/>.
+        /// </summary>
+        /// <param name="unixTime">The time in milliseconds since 1970 / 01 / 01</param>
+        /// <returns></returns>
+        public static DateTime FromUnixMilliseconds(ulong unixTime)
 		{
 			var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 			return epoch.AddMilliseconds(Convert.ToDouble(unixTime));
@@ -698,8 +686,8 @@ namespace DiscordRPC
 		/// <para>Max 128 Bytes</para>
 		/// </summary>
 		[JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-		public string ID { get { return _partyid; } set { _partyid = value.GetNullOrString(); } }
-		private string _partyid;
+		public string ID { get => _partyid; set => _partyid = value.GetNullOrString(); }
+        private string _partyid;
 
 		/// <summary>
 		/// The current size of the players party / lobby / group.

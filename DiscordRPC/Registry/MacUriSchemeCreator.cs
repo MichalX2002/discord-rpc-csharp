@@ -11,6 +11,7 @@ namespace DiscordRPC.Registry
     internal class MacUriSchemeCreator : IUriSchemeCreator
     {
         private ILogger logger;
+
         public MacUriSchemeCreator(ILogger logger)
         {
             this.logger = logger;

@@ -23,8 +23,8 @@ namespace DiscordRPC.Logging
 		/// <summary>
 		/// A alias too <see cref="Coloured"/>
 		/// </summary>
-		public bool Colored { get { return Coloured; } set { Coloured = value; } }
-       
+		public bool Colored { get => Coloured; set => Coloured = value; }
+
         /// <summary>
         /// Creates a new instance of a Console Logger.
         /// </summary>

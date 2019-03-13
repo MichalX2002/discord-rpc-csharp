@@ -7,12 +7,12 @@ namespace DiscordRPC.Message
 	/// </summary>
 	public class PresenceMessage : IMessage
 	{
-		/// <summary>
-		/// The type of message received from discord
-		/// </summary>
-		public override MessageType Type { get { return MessageType.PresenceUpdate; } }
+        /// <summary>
+        /// The type of message received from discord
+        /// </summary>
+        public override MessageType Type => MessageType.PresenceUpdate;
 
-		internal PresenceMessage() : this(null) { }
+        internal PresenceMessage() : this(null) { }
 		internal PresenceMessage(RichPresenceResponse rpr)
 		{
 			if (rpr == null)

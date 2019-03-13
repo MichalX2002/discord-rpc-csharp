@@ -41,12 +41,12 @@ namespace DiscordRPC.IO
 			}
 		}
 
-		/// <summary>
-		/// The pipe we are currently connected too.
-		/// </summary>
-		public int ConnectedPipe {  get { return _connectedPipe; } }
+        /// <summary>
+        /// The pipe we are currently connected too.
+        /// </summary>
+        public int ConnectedPipe => _connectedPipe;
 
-		private int _connectedPipe;
+        private int _connectedPipe;
 		private NamedPipeClientStream _stream;
 
 		private byte[] _buffer = new byte[PipeFrame.MAX_SIZE];
@@ -65,7 +65,7 @@ namespace DiscordRPC.IO
 		public ManagedNamedPipeClient()
 		{
 			_buffer = new byte[PipeFrame.MAX_SIZE];
-			Logger = new NullLogger();
+			Logger = NullLogger.Instance;
 			_stream = null;
 		}
 
@@ -85,7 +85,7 @@ namespace DiscordRPC.IO
 			//Attempt to connect to the specific pipe
 			if (pipe >= 0 && AttemptConnection(pipe))
 			{
-				tBeginRead();
+				BeginRead();
 				return true;
 			}
 
@@ -94,7 +94,7 @@ namespace DiscordRPC.IO
 			{
 				if (AttemptConnection(i))
 				{
-					tBeginRead();
+					BeginRead();
 					return true;
 				}
 			}
@@ -146,9 +146,10 @@ namespace DiscordRPC.IO
 		/// <summary>
 		/// Starts a read. Can be executed in another thread.
 		/// </summary>
-		private void tBeginRead()
+		private void BeginRead()
 		{
-			if (_isClosed) return;
+			if (_isClosed)
+                return;
 			try
 			{
 				lock (l_stream)
@@ -157,7 +158,7 @@ namespace DiscordRPC.IO
 					if (_stream == null || !_stream.IsConnected) return;
 
 					Logger.Trace("Begining Read of {0} bytes", _buffer.Length);
-					_stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(tEndRead), _stream.IsConnected);
+					_stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(EndRead), _stream.IsConnected);
 				}
 			}
 			catch(ObjectDisposedException)
@@ -182,7 +183,7 @@ namespace DiscordRPC.IO
 		/// Ends a read. Can be executed in another thread.
 		/// </summary>
 		/// <param name="callback"></param>
-		private void tEndRead(IAsyncResult callback)
+		private void EndRead(IAsyncResult callback)
 		{
 			Logger.Trace("Ending Read");
 			int bytes = 0;
@@ -193,7 +194,8 @@ namespace DiscordRPC.IO
 				lock (l_stream)
 				{
 					//Make sure the stream is still valid
-					if (_stream == null || !_stream.IsConnected) return;
+					if (_stream == null || !_stream.IsConnected)
+                        return;
 
 					//Read our btyes
 					bytes = _stream.EndRead(callback);
@@ -228,7 +230,7 @@ namespace DiscordRPC.IO
 			if (bytes > 0)
 			{
 				//Load it into a memory stream and read the frame
-				using (MemoryStream memory = new MemoryStream(_buffer, 0, bytes))
+				using (var memory = new MemoryStream(_buffer, 0, bytes))
 				{
 					try
 					{
@@ -260,7 +262,7 @@ namespace DiscordRPC.IO
 			if (!_isClosed && IsConnected)
 			{
 				Logger.Trace("Starting another read");
-				tBeginRead();
+				BeginRead();
 			}
 		}
 
@@ -280,7 +282,7 @@ namespace DiscordRPC.IO
 				if (_framequeue.Count == 0)
 				{
 					//We found nothing, so just default and return null
-					frame = default(PipeFrame);
+					frame = default;
 					return false;
 				}
 

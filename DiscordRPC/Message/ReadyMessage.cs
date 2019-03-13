@@ -9,15 +9,15 @@ namespace DiscordRPC.Message
 	/// </summary>
 	public class ReadyMessage : IMessage
 	{
-		/// <summary>
-		/// The type of message received from discord
-		/// </summary>
-		public override MessageType Type { get { return MessageType.Ready; } }
-		
-		/// <summary>
-		/// The configuration of the connection
-		/// </summary>
-		[JsonProperty("config")]
+        /// <summary>
+        /// The type of message received from discord
+        /// </summary>
+        public override MessageType Type => MessageType.Ready;
+
+        /// <summary>
+        /// The configuration of the connection
+        /// </summary>
+        [JsonProperty("config")]
 		public Configuration Configuration { get; set; }
 
 		/// <summary>

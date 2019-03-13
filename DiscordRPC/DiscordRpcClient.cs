@@ -3,27 +3,27 @@ using DiscordRPC.Exceptions;
 using DiscordRPC.IO;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
-using DiscordRPC.Registry;
 using DiscordRPC.RPC;
 using DiscordRPC.RPC.Commands;
 using System;
 
 namespace DiscordRPC
 {
-
 	/// <summary>
 	/// A Discord RPC Client which is used to send Rich Presence updates and receive Join / Spectate events.
 	/// </summary>
 	public class DiscordRpcClient : IDisposable
-	{
-		#region Properties
-        
+    {
+        private RpcConnection connection;
+        private ILogger _logger = NullLogger.Instance;
 
-		/// <summary>
-		/// Gets a value indicating if the client has registered a URI Scheme. If this is false, Join / Spectate events will fail.
+        #region Properties
+
+        /// <summary>
+        /// Gets a value indicating if the client has registered a URI Scheme. If this is false, Join / Spectate events will fail.
         /// <para>To register a URI Scheme, call <see cref="RegisterUriScheme(string, string)"/>.</para>
-		/// </summary>
-		public bool HasRegisteredUriScheme { get; private set; }
+        /// </summary>
+        public bool HasRegisteredUriScheme { get; private set; }
 
 		/// <summary>
 		/// Gets the Application ID of the RPC Client.
@@ -48,21 +48,21 @@ namespace DiscordRPC
 		/// <summary>
 		/// The dispose state of the client object.
 		/// </summary>
-		public bool Disposed { get; private set; }
+		public bool IsDisposed { get; private set; }
         
 		/// <summary>
 		/// The logger used this client and its associated components. <see cref="ILogger"/> are not called safely and can come from any thread. It is upto the <see cref="ILogger"/> to account for this and apply appropriate thread safe methods.
 		/// </summary>
 		public ILogger Logger
-		{
-			get { return _logger; }
-			set
-			{
-				this._logger = value;
-				if (connection != null) connection.Logger = value;
-			}
-		}
-		private ILogger _logger = new NullLogger();
+        {
+            get => _logger;
+            set
+            {
+                this._logger = value;
+                if (connection != null)
+                    connection.Logger = value;
+            }
+        }
 		#endregion
 
 		/// <summary>
@@ -71,12 +71,16 @@ namespace DiscordRPC
 		/// </summary>
 		public int TargetPipe { get; private set; }
 
-		private RpcConnection connection;
-
 		/// <summary>
 		/// The current presence that the client has. Gets set with <see cref="SetPresence(RichPresence)"/> and updated on <see cref="OnPresenceUpdate"/>.
 		/// </summary>
 		public RichPresence CurrentPresence { get; private set; }
+
+        public string ThreadName
+        {
+            get => connection.ThreadName;
+            set => connection.ThreadName = value;
+        }
 
 		/// <summary>
 		/// Current subscription to events. Gets set with <see cref="Subscribe(EventType)"/>, <see cref="UnsubscribeMessage"/> and updated on <see cref="OnSubscribe"/>, <see cref="OnUnsubscribe"/>.
@@ -104,14 +108,14 @@ namespace DiscordRPC
 		/// </summary>
 		public bool ShutdownOnly
         {
-            get { return _shutdownOnly; }
+            get => _shutdownOnly;
             set
             {
                 _shutdownOnly = value;
                 if (connection != null) connection.ShutdownOnly = value;
             }
         }
-		private bool _shutdownOnly = true;
+        private bool _shutdownOnly = true;
         
 		#region Events
 
@@ -217,10 +221,10 @@ namespace DiscordRPC
             HasRegisteredUriScheme = false;
 
             //Prepare the logger
-            _logger = logger ?? new NullLogger();
+            _logger = logger ?? NullLogger.Instance;
 
-			//Create the RPC client, giving it the important details
-			connection = new RpcConnection(ApplicationID, ProcessID, TargetPipe, client ?? new ManagedNamedPipeClient(), messageQueueSize)
+            //Create the RPC client, giving it the important details
+            connection = new RpcConnection(ApplicationID, ProcessID, TargetPipe, client ?? new ManagedNamedPipeClient(), messageQueueSize)
             {
                 ShutdownOnly = _shutdownOnly,
                 Logger = _logger
@@ -309,7 +313,7 @@ namespace DiscordRPC
         [System.Obsolete("This method enables inproper message handling. Use the Invoke() function instead.")]
 		public IMessage Dequeue()
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
 			//Dequeue the message and do some preprocessing
@@ -327,7 +331,7 @@ namespace DiscordRPC
         [System.Obsolete("This method enables inproper message handling. Use the Invoke() function instead.")]
         public IMessage[] DequeueAll()
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
 			//Dequeue all the messages and process them
@@ -345,50 +349,47 @@ namespace DiscordRPC
 			{
 				//We got a update, so we will update our current presence
 				case MessageType.PresenceUpdate:
-					var pm = message as PresenceMessage;
-					if (pm != null)
-					{
-						//We need to merge these presences together
-						if (CurrentPresence == null)
-						{
+                    if (message is PresenceMessage pm)
+                    {
+                        //We need to merge these presences together
+                        if (CurrentPresence == null)
+                        {
                             CurrentPresence = pm.Presence;
-						}
-						else if (pm.Presence == null)
-						{
+                        }
+                        else if (pm.Presence == null)
+                        {
                             CurrentPresence = null;
-						}
-						else
-						{
+                        }
+                        else
+                        {
                             CurrentPresence.Merge(pm.Presence);
-						}
+                        }
 
-						//Update the message
-						pm.Presence = CurrentPresence;
-					}
+                        //Update the message
+                        pm.Presence = CurrentPresence;
+                    }
 
-					break;
+                    break;
 
 				//Update our configuration
 				case MessageType.Ready:
-					var rm = message as ReadyMessage;
-					if (rm != null)
-					{
-						Configuration = rm.Configuration;
-						CurrentUser = rm.User;
+                    if (message is ReadyMessage rm)
+                    {
+                        Configuration = rm.Configuration;
+                        CurrentUser = rm.User;
 
-						//Resend our presence and subscription
-						SynchronizeState();
-					}
-					break;
+                        //Resend our presence and subscription
+                        SynchronizeState();
+                    }
+                    break;
 
 				//Update the request's CDN for the avatar helpers
 				case MessageType.JoinRequest:
 					if (Configuration != null)
 					{
-						//Update the User object within the join request if the current Cdn
-						var jrm = message as JoinRequestMessage;
-						if (jrm != null) jrm.User.SetConfiguration(Configuration);
-					}
+                        //Update the User object within the join request if the current Cdn
+                        if (message is JoinRequestMessage jrm) jrm.User.SetConfiguration(Configuration);
+                    }
 					break;
 
 				case MessageType.Subscribe:
@@ -416,7 +417,7 @@ namespace DiscordRPC
         /// <param name="acceptRequest">Accept the join request.</param>
         public void Respond(JoinRequestMessage request, bool acceptRequest)
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
 			if (connection == null)
@@ -431,7 +432,7 @@ namespace DiscordRPC
 		/// <param name="presence">The Rich Presence to set on the current Discord user.</param>
 		public void SetPresence(RichPresence presence)
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
             if (!IsInitialized)
@@ -673,7 +674,7 @@ namespace DiscordRPC
 		/// </summary>
 		public void ClearPresence()
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
             if (!IsInitialized)
@@ -688,6 +689,7 @@ namespace DiscordRPC
 
         #region Subscriptions
 
+#if !NETSTANDARD
         /// <summary>
         /// Registers the application executable to a custom URI Scheme.
         /// <para>This is required for the Join and Spectate features. Discord will run this custom URI Scheme to launch your application when a user presses either of the buttons.</para>
@@ -700,6 +702,7 @@ namespace DiscordRPC
             var urischeme = new UriSchemeRegister(_logger, ApplicationID, steamAppID, executable);
             return HasRegisteredUriScheme = urischeme.RegisterUriScheme();
         }
+#endif
 
         /// <summary>
         /// Subscribes to an event sent from discord. Used for Join / Spectate feature.
@@ -747,7 +750,7 @@ namespace DiscordRPC
 			if (type == EventType.None) return;
 
 			//We cannot do anything if we are disposed or missing our connection.
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
             if (!IsInitialized)
@@ -771,7 +774,7 @@ namespace DiscordRPC
 				connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivityJoinRequest, IsUnsubscribe = isUnsubscribe });
 		}
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Resends the current presence and subscription. This is used when Ready is called to keep the current state within discord.
@@ -794,7 +797,7 @@ namespace DiscordRPC
 		/// <returns></returns>
 		public bool Initialize()
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
             if (IsInitialized)
@@ -823,9 +826,9 @@ namespace DiscordRPC
 		/// </summary>
 		public void Dispose()
 		{
-			if (Disposed) return;
+			if (IsDisposed) return;
             if (IsInitialized) Deinitialize();
-            Disposed = true;
+            IsDisposed = true;
 		}
 
 	}

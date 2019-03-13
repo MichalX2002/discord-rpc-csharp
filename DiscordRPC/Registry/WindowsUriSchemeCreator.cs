@@ -59,10 +59,10 @@ namespace DiscordRPC.Registry
             {
                 key.SetValue("", "URL:" + friendlyName);
                 key.SetValue("URL Protocol", "");
-
+            
                 using (var iconKey = key.CreateSubKey("DefaultIcon"))
                     iconKey.SetValue("", defaultIcon);
-
+            
                 using (var commandKey = key.CreateSubKey("shell\\open\\command"))
                     commandKey.SetValue("", command);
             }

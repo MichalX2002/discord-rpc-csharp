@@ -91,8 +91,8 @@ namespace DiscordRPC
 		/// <summary>
 		/// The endpoint for the CDN. Normally cdn.discordapp.com
 		/// </summary>
-		public string CdnEndpoint { get { return _cdn; } private set { _cdn = value; } }
-		private string _cdn = "cdn.discordapp.com";
+		public string CdnEndpoint { get => _cdn; private set => _cdn = value; }
+        private string _cdn = "cdn.discordapp.com";
 
 		/// <summary>
 		/// Updates the URL paths to the appropriate configuration
