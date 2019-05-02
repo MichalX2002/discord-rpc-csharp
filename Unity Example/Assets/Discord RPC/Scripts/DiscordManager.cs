@@ -98,12 +98,27 @@ public class DiscordManager : MonoBehaviour {
     #region Unity Events
     
     private void OnDisable() { Deinitialize(); }    //Try to dispose the client when we are disabled
-
+    private void OnDestroy() { Deinitialize(); }
 
 #if (UNITY_WSA || UNITY_WSA_10_0 || UNITY_STANDALONE) && !DISABLE_DISCORD
 
     private void OnEnable() { if (gameObject.activeSelf && !isInitialized) Initialize(); }   //Try to initialize the client when we are enabled.
-    private void Start() { if(!isInitialized) Initialize(); }       //Try to initialize the client when we start. This is useful for moments where we are spawned in
+
+
+    //Try to initialize the client when we start. This is useful for moments where we are spawned in
+    private void Start()
+    {
+        if (!isInitialized)
+        {
+            if (_client != null)
+            {
+                Debug.LogWarning("Client already exists! Disposing Early.");
+                Deinitialize();
+            }
+
+            Initialize();
+        }  
+    }
 
     private void FixedUpdate()
 	{
@@ -117,6 +132,26 @@ public class DiscordManager : MonoBehaviour {
 	}
 
 #endif
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("GameObject/Discord Manager", priority = 10)]
+    private static void CreateNewManager()
+    {
+        var prev = FindObjectOfType<DiscordManager>();
+        if (prev == null)
+        {
+            var go = new GameObject("Discord Manager");
+            prev = go.AddComponent<DiscordManager>();
+        }
+        else
+        {
+            Debug.LogWarning("Cannot create new Discord Manager because one already exists.");
+        }
+
+        UnityEditor.Selection.activeObject = prev;
+    }
+#endif
+
     #endregion
 
     /// <summary>
@@ -161,7 +196,8 @@ public class DiscordManager : MonoBehaviour {
         _client = new DiscordRPC.DiscordRpcClient(
             applicationID,                                  //The Discord Application ID            
             pipe: (int)targetPipe,                          //The target pipe to connect too
-            logger: logger,                                 //The logger
+            logger: logger,                                 //The logger,
+            autoEvents: false,                              //WE will manually invoke events
             client: new DiscordRPC.Unity.UnityNamedPipe()   //The client for the pipe to use. Unity MUST use a NativeNamedPipeClient since its managed client is broken.
         );
 

@@ -4,7 +4,9 @@
 
 This is a C# _implementation_ of the [Discord RPC](https://github.com/discordapp/discord-rpc) library which was originally written in C++. This avoids having to use the official C++ and instead provides a managed way of using the Rich Presence within the .NET environment*.
 
-This library supports all features of the Rich Presence that the official C++ library supports, plus a few extra:
+While the offical C++ library has been depreciated, this library has continued support and development for all your Rich Presence need, without requiring the Game SDK.
+
+Here are some key features of this library:
  - **Message Queuing**
  - **Threaded Reads**
  - **Managed Pipes***
@@ -99,7 +101,11 @@ void Initialize()
 
 **Invoking**
 
-This stage is very important and is often missed. The client will store messages from the pipe and won't invoke them until you call `Invoke()` or `DequeueMessages()`. It does this because the pipe is working on another thread, and manually invoking ensures proper thread saftey and order of operations (especially important in Unity3D applications).
+**Invoking is optional. Use this when thread saftey is paramount.**
+
+The client will store messages from the pipe and won't invoke them until you call `Invoke()` or `DequeueMessages()`. It does this because the pipe is working on another thread, and manually invoking ensures proper thread saftey and order of operations (especially important in Unity3D applications).
+
+In order to enable this method of event calling, you need to set it in teh constructor of the DiscordRpcClient under `autoEvents`.
 ```csharp
 //The main loop of your application, or some sort of timer. Literally the Update function in Unity3D
 void Update() 

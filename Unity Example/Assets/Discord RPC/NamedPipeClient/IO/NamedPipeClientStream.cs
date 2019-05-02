@@ -9,7 +9,7 @@ namespace Lachee.IO
     {
         private IntPtr ptr;
         private bool _isDisposed;
-
+        
         /// <summary>
         /// Can the stream read? Always returns true.
         /// </summary>
@@ -45,9 +45,6 @@ namespace Lachee.IO
         /// </summary>
         public string PipeName { get; private set; }
         
-        /// <summary>Prefix to prepend to all pipe names.</summary>
-        private static readonly string s_pipePrefix = Path.Combine(Path.GetTempPath(), "CoreFxPipe_");
-
         #region Constructors
         /// <summary>
         /// Creates a new instance of a NamedPipeClient
@@ -87,11 +84,11 @@ namespace Lachee.IO
 
                 case PlatformID.Unix:
                     if (server != ".")
-                        throw new PlatformNotSupportedException("Remote pipes are not supported on this platform.");
-
-                    return s_pipePrefix + pipeName;
+                        throw new PlatformNotSupportedException("Remote pipes are not supported on this platform.");                    
+                    return pipeName;
             }
         }
+               
         #endregion
 
         #region Open Close
@@ -235,7 +232,7 @@ namespace Lachee.IO
             const string LIBRARY_NAME = "NativeNamedPipe";
 
             #region Creation and Destruction
-            [DllImport(LIBRARY_NAME, EntryPoint = "createClient", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "createClient", CallingConvention = CallingConvention.Cdecl, ExactSpelling = false)]
             public static extern IntPtr CreateClient();
 
             [DllImport(LIBRARY_NAME, EntryPoint = "destroyClient", CallingConvention = CallingConvention.Cdecl)]
