@@ -1,10 +1,7 @@
-﻿using DiscordRPC.Logging;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
+using DiscordRPC.Logging;
 
 namespace DiscordRPC.Registry
 {
@@ -34,18 +31,8 @@ namespace DiscordRPC.Registry
             }
 
             //Prepare the command
-            string command = null;
-            if (register.UsingSteamApp)
-            {
-                //A steam command isntead
-                command = "xdg-open steam://rungameid/" + register.SteamAppID;
-            }
-            else
-            {
-                //Just a regular discord command
-                command = exe;
-            }
-
+            string command = register.UsingSteamApp ? 
+                ("xdg-open steam://rungameid/" + register.SteamAppID) : exe;
 
             //Prepare the file
             string desktopFileFormat = 
@@ -78,7 +65,6 @@ MimeType=x-scheme-handler/discord-{2}";
                 logger.Error("Failed to register because the Mime failed.");
                 return false;
             }
-
             return true;
         }
 

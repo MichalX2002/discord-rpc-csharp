@@ -1,15 +1,11 @@
 ﻿using DiscordRPC.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace DiscordRPC.Registry
 {
     internal class WindowsUriSchemeCreator : IUriSchemeCreator
     {
         private ILogger logger;
+
         public WindowsUriSchemeCreator(ILogger logger)
         {
             this.logger = logger;
@@ -87,7 +83,5 @@ namespace DiscordRPC.Registry
             }
         }
 #endif
-
-
     }
 }

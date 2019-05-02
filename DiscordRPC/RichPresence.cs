@@ -699,16 +699,18 @@ namespace DiscordRPC
 		[JsonIgnore]
 		public int Max { get; set; }
 
-		[JsonProperty("size", NullValueHandling = NullValueHandling.Ignore)]
-		private int[] _size
-		{
+#pragma warning disable IDE0051 // Remove unused private members
+        // this is used by serialization
+        [JsonProperty("size", NullValueHandling = NullValueHandling.Ignore)]
+        private int[] SizeArray
+#pragma warning restore IDE0051 // Remove unused private members
+        {
 			get
 			{
 				//see issue https://github.com/discordapp/discord-rpc/issues/111
 				int size = Math.Max(1, Size);
 				return new int[] { size, Math.Max(size, Max) };
 			}
-
 			set
 			{
 				if (value.Length != 2)
@@ -722,7 +724,6 @@ namespace DiscordRPC
 					Max = value[1];
 				}
 			}
-
 		}
 	}
 

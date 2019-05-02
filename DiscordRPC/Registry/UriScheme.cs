@@ -31,7 +31,7 @@ namespace DiscordRPC.Registry
         {
             _logger = logger;
             ApplicationID = applicationID.Trim();
-            SteamAppID = steamAppID != null ? steamAppID.Trim() : null;
+            SteamAppID = steamAppID?.Trim();
             ExecutablePath = executable ?? GetApplicationLocation();
         }
 
@@ -40,8 +40,7 @@ namespace DiscordRPC.Registry
         /// </summary>
         public bool RegisterUriScheme()
         {
-            //Get the creator
-            IUriSchemeCreator creator = null;
+            IUriSchemeCreator creator;
             switch(Environment.OSVersion.Platform)
             {
                 case PlatformID.Win32Windows:
@@ -67,7 +66,7 @@ namespace DiscordRPC.Registry
                     throw new PlatformNotSupportedException("Platform does not support registration.");
             }
 
-            //Regiser the app
+            //Register the app
             return creator.RegisterUriScheme(this);
         }
 

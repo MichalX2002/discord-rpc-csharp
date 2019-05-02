@@ -65,7 +65,7 @@ namespace DiscordRPC.IO
         public ManagedNamedPipeClient()
         {
             _buffer = new byte[PipeFrame.MAX_SIZE];
-            Logger = new NullLogger();
+            Logger = NullLogger.Instance;
             _stream = null;
         }
 
@@ -291,7 +291,7 @@ namespace DiscordRPC.IO
                 if (_framequeue.Count == 0)
                 {
                     //We found nothing, so just default and return null
-                    frame = default(PipeFrame);
+                    frame = default;
                     return false;
                 }
 

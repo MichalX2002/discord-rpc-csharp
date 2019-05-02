@@ -3,6 +3,7 @@ using DiscordRPC.Exceptions;
 using DiscordRPC.IO;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
+using DiscordRPC.Registry;
 using DiscordRPC.RPC;
 using DiscordRPC.RPC.Commands;
 using System;
@@ -463,7 +464,7 @@ namespace DiscordRPC
 			{
 				//Send valid presence
 				//Validate the presence with our settings
-				if (presence.HasSecrets()  && !HasRegisteredUriScheme)
+				if (presence.HasSecrets() && !HasRegisteredUriScheme)
 					throw new BadPresenceException("Cannot send a presence with secrets as this object has not registered a URI scheme. Please enable the uri scheme registration in the DiscordRpcClient constructor.");
 
 				if (presence.HasParty() && presence.Party.Max < presence.Party.Size)
@@ -740,7 +741,6 @@ namespace DiscordRPC
 
         #region Subscriptions
 
-#if !NETSTANDARD
         /// <summary>
         /// Registers the application executable to a custom URI Scheme.
         /// <para>This is required for the Join and Spectate features. Discord will run this custom URI Scheme to launch your application when a user presses either of the buttons.</para>
@@ -753,7 +753,6 @@ namespace DiscordRPC
             var urischeme = new UriSchemeRegister(_logger, ApplicationID, steamAppID, executable);
             return HasRegisteredUriScheme = urischeme.RegisterUriScheme();
         }
-#endif
 
         /// <summary>
         /// Subscribes to an event sent from discord. Used for Join / Spectate feature.
