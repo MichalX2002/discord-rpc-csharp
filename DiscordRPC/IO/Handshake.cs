@@ -1,23 +1,25 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DiscordRPC.IO
 {
-	internal class Handshake
+	internal readonly struct Handshake
 	{       
 		/// <summary>
 		/// Version of the IPC API we are using
 		/// </summary>
 		[JsonProperty("v")]
-		public int Version { get; set; }
+		public int Version { get; }
 
 		/// <summary>
 		/// The ID of the app.
 		/// </summary>
 		[JsonProperty("client_id")]
-		public string ClientID { get; set; }
-	}
+		public string ClientID { get; }
+
+        public Handshake(int version, string clientID)
+        {
+            Version = version;
+            ClientID = clientID;
+        }
+    }
 }

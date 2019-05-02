@@ -9,7 +9,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// The connection to the discord client was succesfull. This is called before <see cref="MessageType.Ready"/>.
 	/// </summary>
-	public class ConnectionEstablishedMessage : IMessage
+	public class ConnectionEstablishedMessage : MessageBase
 	{
         /// <summary>
         /// The type of message received from discord

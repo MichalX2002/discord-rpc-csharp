@@ -1,16 +1,14 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace DiscordRPC.IO
 {
-	/// <summary>
-	/// A frame received and sent to the Discord client for RPC communications.
-	/// </summary>
-	public struct PipeFrame
+    /// <summary>
+    /// A frame received and sent to the Discord client for RPC communications.
+    /// </summary>
+    public struct PipeFrame
 	{
 		/// <summary>
 		/// The maxium size of a pipe frame (16kb).
@@ -112,17 +110,15 @@ namespace DiscordRPC.IO
 		/// <returns></returns>
 		public bool ReadStream(Stream stream)
 		{
-			//Try to read the opcode
-			uint op;
-			if (!TryReadUInt32(stream, out op))
-				return false;
+            //Try to read the opcode
+            if (!TryReadUInt32(stream, out uint op))
+                return false;
 
-			//Try to read the length
-			uint len;
-			if (!TryReadUInt32(stream, out len))
-				return false;
+            //Try to read the length
+            if (!TryReadUInt32(stream, out uint len))
+                return false;
 
-			uint readsRemaining = len;
+            uint readsRemaining = len;
 
 			//Read the contents
 			using (var mem = new MemoryStream())

@@ -539,30 +539,28 @@ namespace DiscordRPC
 			_smallimagetext = other._smallimagetext;
 			_largeimagetext = other._largeimagetext;
 
-			//Convert large ID
-			ulong largeID;
-			if (ulong.TryParse(other._largeimagekey, out largeID))
-			{
-				_largeimageID = largeID;
-			}
-			else
-			{
-				_largeimagekey = other._largeimagekey;
-				_largeimageID = null;
-			}
+            //Convert large ID
+            if (ulong.TryParse(other._largeimagekey, out ulong largeID))
+            {
+                _largeimageID = largeID;
+            }
+            else
+            {
+                _largeimagekey = other._largeimagekey;
+                _largeimageID = null;
+            }
 
-			//Convert the small ID
-			ulong smallID;
-			if (ulong.TryParse(other._smallimagekey, out smallID))
-			{
-				_smallimageID = smallID;
-			}
-			else
-			{
-				_smallimagekey = other._smallimagekey;
-				_smallimageID = null;
-			}
-		}
+            //Convert the small ID
+            if (ulong.TryParse(other._smallimagekey, out ulong smallID))
+            {
+                _smallimageID = smallID;
+            }
+            else
+            {
+                _smallimagekey = other._smallimagekey;
+                _smallimageID = null;
+            }
+        }
 	}
 
 	/// <summary>

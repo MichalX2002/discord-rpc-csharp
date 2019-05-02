@@ -9,7 +9,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// Called when some other person has requested access to this game. C -> D -> C.
 	/// </summary>
-	public class JoinRequestMessage : IMessage
+	public class JoinRequestMessage : MessageBase
 	{
         /// <summary>
         /// The type of message received from discord

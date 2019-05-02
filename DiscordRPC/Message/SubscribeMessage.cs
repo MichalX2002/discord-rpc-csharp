@@ -5,7 +5,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// Called as validation of a subscribe
 	/// </summary>
-	public class SubscribeMessage : IMessage
+	public class SubscribeMessage : MessageBase
 	{
         /// <summary>
         /// The type of message received from discord

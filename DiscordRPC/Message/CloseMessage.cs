@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Called when the IPC has closed.
 	/// </summary>
-	public class CloseMessage : IMessage
+	public class CloseMessage : MessageBase
 	{
         /// <summary>
         /// The type of message

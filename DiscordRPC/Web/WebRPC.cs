@@ -27,11 +27,10 @@ namespace DiscordRPC.Web
 		{
 			try
 			{
-				RichPresence response;
-				if (TrySetRichPresence(presence, out response, applicationID, port))
-					return response;
-				
-				return null;
+                if (TrySetRichPresence(presence, out RichPresence response, applicationID, port))
+                    return response;
+
+                return null;
 			}
 			catch (Exception)
 			{

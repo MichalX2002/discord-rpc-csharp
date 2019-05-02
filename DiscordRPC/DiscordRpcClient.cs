@@ -15,8 +15,9 @@ namespace DiscordRPC
 	public sealed class DiscordRpcClient : IDisposable
     {
         private object _sync = new object();
-        private ILogger _logger = new NullLogger();
         private bool _shutdownOnly = true;
+        private ILogger _logger = NullLogger.Instance;
+        private RpcConnection _connection;
 
         #region Properties
 
@@ -60,8 +61,8 @@ namespace DiscordRPC
 			set
 			{
 				this._logger = value;
-				if (connection != null)
-                    connection.Logger = value;
+				if (_connection != null)
+                    _connection.Logger = value;
 			}
 		}
 		
@@ -84,8 +85,8 @@ namespace DiscordRPC
 
         public string ThreadName
         {
-            get => connection.ThreadName;
-            set => connection.ThreadName = value;
+            get => _connection.ThreadName;
+            set => _connection.ThreadName = value;
         }
 
 		/// <summary>
@@ -118,8 +119,8 @@ namespace DiscordRPC
             set
             {
                 _shutdownOnly = value;
-                if (connection != null)
-                    connection.ShutdownOnly = value;
+                if (_connection != null)
+                    _connection.ShutdownOnly = value;
             }
         }
 
@@ -234,14 +235,14 @@ namespace DiscordRPC
             _logger = logger ?? NullLogger.Instance;
 
 			//Create the RPC client, giving it the important details
-			connection = new RpcConnection(ApplicationID, ProcessID, TargetPipe, client ?? new ManagedNamedPipeClient(), autoEvents ? 0 : 128U)
+			_connection = new RpcConnection(ApplicationID, ProcessID, TargetPipe, client ?? new ManagedNamedPipeClient(), autoEvents ? 0 : 128U)
             {
                 ShutdownOnly = _shutdownOnly,
                 Logger = _logger
             };
 
             //Subscribe to its event
-            connection.OnRpcMessage += (sender, msg) =>
+            _connection.OnRpcMessage += (sender, msg) =>
             {
                 if (OnRpcMessage != null)
                     OnRpcMessage.Invoke(this, msg);
@@ -259,17 +260,17 @@ namespace DiscordRPC
 		/// <para>This method cannot be used if <see cref="AutoEvents"/> is enabled.</para>
         /// </summary>
 		/// <returns>Returns the messages that were invoked and in the order they were invoked.</returns>
-		public IMessage[] Invoke()
+		public MessageBase[] Invoke()
 		{
             if (AutoEvents)
             {
                 Logger.Error("Cannot Invoke client when AutomaticallyInvokeEvents has been set.");
-                return new IMessage[0];
+                return new MessageBase[0];
                 //throw new InvalidOperationException("Cannot Invoke client when AutomaticallyInvokeEvents has been set.");
             }
 
             //Dequeue all the messages and process them
-            IMessage[] messages = connection.DequeueMessages();
+            MessageBase[] messages = _connection.DequeueMessages();
 			for (int i = 0; i < messages.Length; i++)
 			{
 				//Do a bit of pre-processing
@@ -285,7 +286,7 @@ namespace DiscordRPC
         /// Processes the message, updating our internal state and then invokes the events.
         /// </summary>
         /// <param name="message"></param>
-		private void ProcessMessage(IMessage message)
+		private void ProcessMessage(MessageBase message)
         {
             if (message == null) return;
             switch (message.Type)
@@ -294,8 +295,7 @@ namespace DiscordRPC
 				case MessageType.PresenceUpdate:
                     lock (_sync)
                     {
-                        var pm = message as PresenceMessage;
-                        if (pm != null)
+                        if (message is PresenceMessage pm)
                         {
                             //We need to merge these presences together
                             if (CurrentPresence == null)
@@ -320,9 +320,8 @@ namespace DiscordRPC
 
 				//Update our configuration
 				case MessageType.Ready:
-					var rm = message as ReadyMessage;
-					if (rm != null)
-					{
+                    if (message is ReadyMessage rm)
+                    {
                         lock (_sync)
                         {
                             Configuration = rm.Configuration;
@@ -430,13 +429,13 @@ namespace DiscordRPC
 			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
-			if (connection == null)
+			if (_connection == null)
 				throw new ObjectDisposedException("Connection", "Cannot initialize as the connection has been deinitialized");
 
             if (!IsInitialized)
                 throw new UninitializedException();
 
-            connection.EnqueueCommand(new RespondCommand() { Accept = acceptRequest, UserID = request.User.ID.ToString() });
+            _connection.EnqueueCommand(new RespondCommand() { Accept = acceptRequest, UserID = request.User.ID.ToString() });
 		}
 
 		/// <summary>
@@ -448,7 +447,7 @@ namespace DiscordRPC
 			if (IsDisposed)
 				throw new ObjectDisposedException("Discord IPC Client");
 
-            if (connection == null)
+            if (_connection == null)
 				throw new ObjectDisposedException("Connection", "Cannot initialize as the connection has been deinitialized");
 
             if (!IsInitialized)
@@ -458,7 +457,7 @@ namespace DiscordRPC
 			if (!presence)
 			{
 				//Clear the presence
-				connection.EnqueueCommand(new PresenceCommand() { PID = this.ProcessID, Presence = null });
+				_connection.EnqueueCommand(new PresenceCommand() { PID = this.ProcessID, Presence = null });
 			}
 			else
 			{
@@ -474,7 +473,7 @@ namespace DiscordRPC
                     Logger.Warning("The presence has set the secrets but no buttons will show as there is no party available.");
 				
 				//Send the presence
-				connection.EnqueueCommand(new PresenceCommand() { PID = this.ProcessID, Presence = presence.Clone() });
+				_connection.EnqueueCommand(new PresenceCommand() { PID = this.ProcessID, Presence = presence.Clone() });
 			}
 
             //Update our local store
@@ -732,7 +731,7 @@ namespace DiscordRPC
             if (!IsInitialized)
                 throw new UninitializedException();
 
-			if (connection == null)
+			if (_connection == null)
 				throw new ObjectDisposedException("Connection", "Cannot initialize as the connection has been deinitialized");
 
 			//Just a wrapper function for sending null
@@ -819,7 +818,7 @@ namespace DiscordRPC
             if (!IsInitialized)
                 throw new UninitializedException();
 
-			if (connection == null)
+			if (_connection == null)
 				throw new ObjectDisposedException("Connection", "Cannot initialize as the connection has been deinitialized");
 				
 			//We dont have the Uri Scheme registered, we should throw a exception to tell the user.
@@ -828,13 +827,13 @@ namespace DiscordRPC
 
 			//Add the subscribe command to be sent when the connection is able too
 			if ((type & EventType.Spectate) == EventType.Spectate)
-				connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivitySpectate, IsUnsubscribe = isUnsubscribe });
+				_connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivitySpectate, IsUnsubscribe = isUnsubscribe });
 
 			if ((type & EventType.Join) == EventType.Join)
-				connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivityJoin, IsUnsubscribe = isUnsubscribe });
+				_connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivityJoin, IsUnsubscribe = isUnsubscribe });
 
 			if ((type & EventType.JoinRequest) == EventType.JoinRequest)
-				connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivityJoinRequest, IsUnsubscribe = isUnsubscribe });
+				_connection.EnqueueCommand(new SubscribeCommand() { Event = RPC.Payload.ServerEvent.ActivityJoinRequest, IsUnsubscribe = isUnsubscribe });
 		}
 
 #endregion
@@ -866,10 +865,10 @@ namespace DiscordRPC
             if (IsInitialized)
                 throw new UninitializedException("Cannot initialize a client that is already initialized");
 
-            if (connection == null)
+            if (_connection == null)
 				throw new ObjectDisposedException("Connection", "Cannot initialize as the connection has been deinitialized");
 
-			return IsInitialized = connection.AttemptConnection();
+			return IsInitialized = _connection.AttemptConnection();
 		}
 		
         /// <summary>
@@ -880,7 +879,7 @@ namespace DiscordRPC
             if (!IsInitialized)
                 throw new UninitializedException("Cannot deinitialize a client that has not been initalized.");
 
-            connection.Close();
+            _connection.Close();
             IsInitialized = false;
         }
 

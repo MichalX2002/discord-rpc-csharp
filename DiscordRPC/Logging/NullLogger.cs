@@ -7,10 +7,6 @@
 	{
         public static readonly NullLogger Instance = new NullLogger();
 
-        private NullLogger()
-        {
-        }
-
 		/// <summary>
 		/// The level of logging to apply to this logger.
 		/// </summary>

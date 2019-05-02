@@ -9,7 +9,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// Failed to establish any connection with discord. Discord is potentially not running?
 	/// </summary>
-	public class ConnectionFailedMessage : IMessage
+	public class ConnectionFailedMessage : MessageBase
 	{
         /// <summary>
         /// The type of message received from discord

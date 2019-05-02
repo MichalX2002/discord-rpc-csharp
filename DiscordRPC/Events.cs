@@ -90,5 +90,5 @@ namespace DiscordRPC.Events
     /// </summary>
     /// <param name="sender">The handler that sent this event</param>
     /// <param name="msg">The raw message from the RPC</param>
-    public delegate void OnRpcMessageEvent(object sender, IMessage msg);
+    public delegate void OnRpcMessageEvent(object sender, MessageBase msg);
 }

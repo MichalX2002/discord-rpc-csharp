@@ -118,7 +118,7 @@ namespace DiscordRPC.RPC
 
 		private readonly object l_rxqueue = new object();	//Lock for the receive queue
         private readonly uint _maxRxQueueSize;              //The max size of the RX queue
-        private Queue<IMessage> _rxqueue;                   //The receive queue
+        private Queue<MessageBase> _rxqueue;                   //The receive queue
 
 		private AutoResetEvent queueUpdatedEvent = new AutoResetEvent(false);
 		private BackoffDelay delay;                     //The backoff delay before reconnecting.
@@ -147,7 +147,7 @@ namespace DiscordRPC.RPC
 			_rtqueue = new Queue<ICommand>();
 
             _maxRxQueueSize = maxRxQueueSize;
-            _rxqueue = new Queue<IMessage>((int)_maxRxQueueSize + 1);
+            _rxqueue = new Queue<MessageBase>((int)_maxRxQueueSize + 1);
 			
 			nonce = 0;
 		}
@@ -180,7 +180,7 @@ namespace DiscordRPC.RPC
 		/// Adds a message to the message queue. Does not copy the message, so besure to copy it yourself or dereference it.
 		/// </summary>
 		/// <param name="message">The message to add</param>
-		private void EnqueueMessage(IMessage message)
+		private void EnqueueMessage(MessageBase message)
 		{
             //Invoke the message
             try
@@ -222,7 +222,7 @@ namespace DiscordRPC.RPC
 		/// Dequeues a single message from the event stack. Returns null if none are available.
 		/// </summary>
 		/// <returns></returns>
-		internal IMessage DequeueMessage()
+		internal MessageBase DequeueMessage()
         {
             //Logger.Trace("Deque Message");
             lock (l_rxqueue)
@@ -239,13 +239,13 @@ namespace DiscordRPC.RPC
 		/// Dequeues all messages from the event stack. 
 		/// </summary>
 		/// <returns></returns>
-		internal IMessage[] DequeueMessages()
+		internal MessageBase[] DequeueMessages()
         {
             //Logger.Trace("Deque Multiple Messages");
             lock (l_rxqueue)
 			{
 				//Copy the messages into an array
-				IMessage[] messages = _rxqueue.ToArray();
+				MessageBase[] messages = _rxqueue.ToArray();
 
 				//Clear the entire queue
 				_rxqueue.Clear();
@@ -292,17 +292,16 @@ namespace DiscordRPC.RPC
 						EstablishHandshake();
 						Logger.Trace("Connection Established. Starting reading loop...");
 
-						//Continously iterate, waiting for the frame
-						//We want to only stop reading if the inside tells us (mainloop), if we are aborting (abort) or the pipe disconnects
-						// We dont want to exit on a shutdown, as we still have information
-						PipeFrame frame;
-						bool mainloop = true;
-						while (mainloop && !aborting && !shutdown && namedPipe.IsConnected)
+                        //Continously iterate, waiting for the frame
+                        //We want to only stop reading if the inside tells us (mainloop), if we are aborting (abort) or the pipe disconnects
+                        // We dont want to exit on a shutdown, as we still have information
+                        bool mainloop = true;
+                        while (mainloop && !aborting && !shutdown && namedPipe.IsConnected)
 						{
 							#region Read Loop
 
 							//Iterate over every frame we have queued up, processing its contents
-							if (namedPipe.ReadFrame(out frame))
+							if (namedPipe.ReadFrame(out PipeFrame frame))
 							{
 								#region Read Payload
 								Logger.Trace("Read Payload: {0}", frame.Opcode);
@@ -573,7 +572,7 @@ namespace DiscordRPC.RPC
 		
 		#endregion
 
-		#region Writting
+		#region Writing
 		
 		private void ProcessCommandQueue()
 		{
@@ -599,7 +598,8 @@ namespace DiscordRPC.RPC
 					//Pull the value and update our writing needs
 					// If we have nothing to write, exit the loop
 					needsWriting = _rtqueue.Count > 0;
-					if (!needsWriting) break;	
+					if (!needsWriting)
+                        break;	
 
 					//Peek at the item
 					item = _rtqueue.Peek();
@@ -614,7 +614,7 @@ namespace DiscordRPC.RPC
 				Logger.Trace("Attempting to send payload: " + payload.Command);
 
 				//Prepare the frame
-				PipeFrame frame = new PipeFrame();
+				var frame = new PipeFrame();
 				if (item is CloseCommand)
 				{
 					//We have been sent a close frame. We better just send a handwave
@@ -623,7 +623,8 @@ namespace DiscordRPC.RPC
 
 					//Queue the item
 					Logger.Trace("Handwave sent, ending queue processing.");
-					lock (l_rtqueue) _rtqueue.Dequeue();
+					lock (l_rtqueue)
+                        _rtqueue.Dequeue();
 
 					//Stop sending any more messages
 					return;
@@ -634,7 +635,8 @@ namespace DiscordRPC.RPC
 					{
 						//We are aborting, so just dequeue the message and dont bother sending it
 						Logger.Warning("- skipping frame because of abort.");
-						lock (l_rtqueue) _rtqueue.Dequeue();
+						lock (l_rtqueue)
+                            _rtqueue.Dequeue();
 					}
 					else
 					{
@@ -647,7 +649,8 @@ namespace DiscordRPC.RPC
 						{
 							//We sent it, so now dequeue it
 							Logger.Trace("Sent Successfully.");
-							lock (l_rtqueue) _rtqueue.Dequeue();
+							lock (l_rtqueue)
+                                _rtqueue.Dequeue();
 						}
 						else
 						{
@@ -684,7 +687,7 @@ namespace DiscordRPC.RPC
 
 			//Send it off to the server
 			Logger.Trace("Sending Handshake...");				
-			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Handshake, new Handshake() { Version = VERSION, ClientID = applicationID })))
+			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Handshake, new Handshake(VERSION, applicationID))))
 			{
 				Logger.Error("Failed to write a handshake.");
 				return;
@@ -709,7 +712,7 @@ namespace DiscordRPC.RPC
 			}
 			
 			//Send the handwave
-			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Close, new Handshake() { Version = VERSION, ClientID = applicationID })))
+			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Close, new Handshake(VERSION, applicationID))))
 			{
 				Logger.Error("failed to write a handwave.");
 				return;

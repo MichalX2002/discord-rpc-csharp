@@ -5,7 +5,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// Created when a error occurs within the ipc and it is sent to the client.
 	/// </summary>
-	public class ErrorMessage : IMessage
+	public class ErrorMessage : MessageBase
 	{
         /// <summary>
         /// The type of message received from discord

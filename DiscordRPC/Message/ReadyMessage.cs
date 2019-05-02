@@ -7,7 +7,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// Called when the ipc is ready to send arguments.
 	/// </summary>
-	public class ReadyMessage : IMessage
+	public class ReadyMessage : MessageBase
 	{
         /// <summary>
         /// The type of message received from discord

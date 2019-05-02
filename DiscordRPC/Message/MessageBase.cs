@@ -5,7 +5,7 @@ namespace DiscordRPC.Message
 	/// <summary>
 	/// Messages received from discord.
 	/// </summary>
-	public abstract class IMessage
+	public abstract class MessageBase
 	{
 		/// <summary>
 		/// The type of message received from discord
@@ -15,15 +15,14 @@ namespace DiscordRPC.Message
         /// <summary>
         /// The time the message was created
         /// </summary>
-        public DateTime TimeCreated => _timecreated;
-        private DateTime _timecreated;
+        public DateTime TimeCreated { get; }
 
-		/// <summary>
-		/// Creates a new instance of the message
-		/// </summary>
-		public IMessage()
+        /// <summary>
+        /// Creates a new instance of the message
+        /// </summary>
+        public MessageBase()
 		{
-			_timecreated = DateTime.Now;
+			TimeCreated = DateTime.Now;
 		}
 	}
 }

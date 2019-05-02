@@ -20,11 +20,10 @@ namespace DiscordRPC.Converters
 		{
 			if (reader.Value == null) return null;
 
-			object val = null;
-			if (TryParseEnum(objectType, (string)reader.Value, out val))
-				return val;
+            if (TryParseEnum(objectType, (string)reader.Value, out object val))
+                return val;
 
-			return existingValue;
+            return existingValue;
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
