@@ -7,7 +7,7 @@ namespace DiscordRPC.RPC.Payload
 	/// <summary>
 	/// Used for Discord IPC Events
 	/// </summary>
-	internal class EventPayload : IPayload
+	internal class EventPayload : PayloadBase
 	{
 		/// <summary>
 		/// The data the server sent too us

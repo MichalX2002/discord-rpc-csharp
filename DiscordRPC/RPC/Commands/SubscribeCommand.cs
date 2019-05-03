@@ -11,7 +11,7 @@ namespace DiscordRPC.RPC.Commands
 		public ServerEvent Event { get; set; }
 		public bool IsUnsubscribe { get; set; }
 		
-		public IPayload PreparePayload(long nonce)
+		public PayloadBase PreparePayload(long nonce)
 		{
 			return new EventPayload(nonce)
 			{

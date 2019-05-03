@@ -6,7 +6,7 @@ namespace DiscordRPC.RPC.Payload
     /// <summary>
     /// Base Payload that is received by both client and server
     /// </summary>
-    internal abstract class IPayload
+    internal abstract class PayloadBase
 	{
 		/// <summary>
 		/// The type of payload
@@ -20,8 +20,8 @@ namespace DiscordRPC.RPC.Payload
 		[JsonProperty("nonce")]
 		public string Nonce { get; set; }
 
-		protected IPayload() { }
-        protected IPayload(long nonce)
+		protected PayloadBase() { }
+        protected PayloadBase(long nonce)
 		{
 			Nonce = nonce.ToString();
 		}

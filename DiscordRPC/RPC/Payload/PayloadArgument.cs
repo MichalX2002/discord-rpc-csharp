@@ -10,7 +10,7 @@ namespace DiscordRPC.RPC.Payload
 	/// SetPrecense
 	/// </para>
 	/// </summary>
-	internal class ArgumentPayload : IPayload
+	internal class ArgumentPayload : PayloadBase
 	{
 		/// <summary>
 		/// The data the server sent too us

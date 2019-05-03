@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DiscordRPC.RPC.Payload;
+﻿using DiscordRPC.RPC.Payload;
 using Newtonsoft.Json;
 
 namespace DiscordRPC.RPC.Commands
@@ -21,7 +17,7 @@ namespace DiscordRPC.RPC.Commands
 		[JsonProperty("activity")]
 		public RichPresence Presence { get; set; }
 
-		public IPayload PreparePayload(long nonce)
+		public PayloadBase PreparePayload(long nonce)
 		{
 			return new ArgumentPayload(this, nonce)
 			{

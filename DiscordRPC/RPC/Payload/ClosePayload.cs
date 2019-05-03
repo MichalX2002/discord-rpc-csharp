@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DiscordRPC.RPC.Payload
 {
-	internal class ClosePayload : IPayload
+	internal class ClosePayload : PayloadBase
 	{
 		/// <summary>
 		/// The close code the discord gave us

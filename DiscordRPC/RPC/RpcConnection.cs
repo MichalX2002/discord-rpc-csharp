@@ -72,14 +72,14 @@ namespace DiscordRPC.RPC
 		/// <summary>
 		/// The current state of the RPC connection
 		/// </summary>
-		public RpcState State { get { var tmp = RpcState.Disconnected; lock (l_states) tmp = _state; return tmp; } }
+		public RpcState State { get { RpcState tmp; lock (l_states) tmp = _state; return tmp; } }
 		private RpcState _state;
 		private readonly object l_states = new object();
 
 		/// <summary>
 		/// The configuration received by the Ready
 		/// </summary>
-		public Configuration Configuration { get { Configuration tmp = null; lock (l_config) tmp = _configuration; return tmp; } }
+		public Configuration Configuration { get { Configuration tmp; lock (l_config) tmp = _configuration; return tmp; } }
 		private Configuration _configuration = null;
 		private readonly object l_config = new object();
 
@@ -610,7 +610,7 @@ namespace DiscordRPC.RPC
 					needsWriting = false;
 				
 				//Prepare the payload
-				IPayload payload = item.PreparePayload(GetNextNonce());
+				PayloadBase payload = item.PreparePayload(GetNextNonce());
 				Logger.Trace("Attempting to send payload: " + payload.Command);
 
 				//Prepare the frame
@@ -728,7 +728,7 @@ namespace DiscordRPC.RPC
 		{
 			Logger.Info("Attempting a new connection");
 
-			//The thread mustn't exist already
+			//The thread can not already exist
 			if (thread != null)
 			{
 				Logger.Error("Cannot attempt a new connection as the previous connection thread is not null!");
@@ -772,7 +772,8 @@ namespace DiscordRPC.RPC
 
 		/// <summary>
 		/// Closes the connection and disposes of resources. This will not force termination, but instead allow Discord disconnect us after we say goodbye. 
-		/// <para>This option helps prevents ghosting in applications where the Process ID is a host and the game is executed within the host (ie: the Unity3D editor). This will tell Discord that we have no presence and we are closing the connection manually, instead of waiting for the process to terminate.</para>
+		/// <para>This option helps prevents ghosting in applications where the Process ID is a host and the game is executed within the host (ie: the Unity3D editor). 
+        /// This will tell Discord that we have no presence and we are closing the connection manually, instead of waiting for the process to terminate.</para>
 		/// </summary>
 		public void Shutdown()
 		{
@@ -784,12 +785,14 @@ namespace DiscordRPC.RPC
 			lock(l_rtqueue)
 			{
 				_rtqueue.Clear();
-				if (CLEAR_ON_SHUTDOWN) _rtqueue.Enqueue(new PresenceCommand() { PID = processID, Presence = null });
+				if (CLEAR_ON_SHUTDOWN)
+                    _rtqueue.Enqueue(new PresenceCommand() { PID = processID, Presence = null });
 				_rtqueue.Enqueue(new CloseCommand());
 			}
 
 			//Trigger the event
 			queueUpdatedEvent.Set();
+            thread.Join();
 		}
 
 		/// <summary>

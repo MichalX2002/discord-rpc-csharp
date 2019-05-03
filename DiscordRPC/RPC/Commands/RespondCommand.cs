@@ -21,7 +21,7 @@ namespace DiscordRPC.RPC.Commands
 		[JsonIgnore]
 		public bool Accept { get; set; }
 
-		public IPayload PreparePayload(long nonce)
+		public PayloadBase PreparePayload(long nonce)
 		{
 			return new ArgumentPayload(this, nonce)
 			{
