@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DiscordRPC.RPC.Payload;
+﻿using DiscordRPC.RPC.Payload;
 using Newtonsoft.Json;
 
 namespace DiscordRPC.RPC.Commands
@@ -13,15 +9,21 @@ namespace DiscordRPC.RPC.Commands
 		/// The user ID that we are accepting / rejecting
 		/// </summary>
 		[JsonProperty("user_id")]
-		public string UserID { get; set; }
+		public string UserID { get; }
 
 		/// <summary>
 		/// If true, the user will be allowed to connect.
 		/// </summary>
 		[JsonIgnore]
-		public bool Accept { get; set; }
+		public bool Accept { get; }
 
-		public PayloadBase PreparePayload(long nonce)
+        public RespondCommand(string userID, bool accept)
+        {
+            UserID = userID;
+            Accept = accept;
+        }
+
+        public PayloadBase PreparePayload(long nonce)
 		{
 			return new ArgumentPayload(this, nonce)
 			{

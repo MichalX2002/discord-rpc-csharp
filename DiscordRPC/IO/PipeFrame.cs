@@ -18,7 +18,7 @@ namespace DiscordRPC.IO
 		/// <summary>
 		/// The opcode of the frame
 		/// </summary>
-		public Opcode Opcode { get; set; }
+		public OpCode Opcode { get; set; }
 
         /// <summary>
         /// The length of the frame data
@@ -44,7 +44,7 @@ namespace DiscordRPC.IO
         /// </summary>
         /// <param name="opcode">The opcode of the frame</param>
         /// <param name="data">The data of the frame that will be serialized as JSON</param>
-        public PipeFrame(Opcode opcode, object data)
+        public PipeFrame(OpCode opcode, object data)
 		{
 			//Set the opcode and a temp field for data
 			Opcode = opcode;
@@ -86,7 +86,7 @@ namespace DiscordRPC.IO
 		/// </summary>
 		/// <param name="opcode"></param>
 		/// <param name="obj"></param>
-		public void SetObject(Opcode opcode, object obj)
+		public void SetObject(OpCode opcode, object obj)
 		{
 			Opcode = opcode;
 			SetObject(obj);
@@ -135,7 +135,7 @@ namespace DiscordRPC.IO
 				if (result.LongLength != len)
 					return false;
 
-				Opcode = (Opcode)op;
+				Opcode = (OpCode)op;
 				Data = result;
 				return true;
 			}
@@ -145,6 +145,9 @@ namespace DiscordRPC.IO
 
 		}
 
+        /// <summary>
+        /// Returns minimum value between a int and a unsigned int
+        /// </summary>
 		private int Min(int a, uint b)
 		{
 			if (b >= a) return a;

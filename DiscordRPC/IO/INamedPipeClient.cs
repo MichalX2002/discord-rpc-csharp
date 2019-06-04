@@ -7,39 +7,47 @@ using System.Text;
 namespace DiscordRPC.IO
 {
 	/// <summary>
-	/// Pipe Client used to communicate with Discord.
+	/// Pipe client used to communicate with Discord.
 	/// </summary>
 	public interface INamedPipeClient : IDisposable
 	{
-
 		/// <summary>
-		/// The logger for the Pipe client to use
+		/// Gets the logger used by the pipe client.
 		/// </summary>
 		ILogger Logger { get; set; }
 
 		/// <summary>
-		/// Is the pipe client currently connected?
+		/// Gets if the pipe client currently connected.
 		/// </summary>
 		bool IsConnected { get; }
 
 		/// <summary>
-		/// The pipe the client is currently connected too
+		/// Gets the pipe that the client is currently connected to.
 		/// </summary>
 		int ConnectedPipe { get; }
 
-		/// <summary>
-		/// Attempts to connect to the pipe. If 0-9 is passed to pipe, it should try to only connect to the specified pipe. If -1 is passed, the pipe will find the first available pipe.
-		/// </summary>
-		/// <param name="pipe">If -1 is passed, the pipe will find the first available pipe, otherwise it connects to the pipe that was supplied</param>
-		/// <returns></returns>
-		bool Connect(int pipe);
-		
-		/// <summary>
-		/// Reads a frame if there is one available. Returns false if there is none. This should be non blocking (aka use a Peek first).
-		/// </summary>
-		/// <param name="frame">The frame that has been read. Will be <code>default(PipeFrame)</code> if it fails to read</param>
-		/// <returns>Returns true if a frame has been read, otherwise false.</returns>
-		bool ReadFrame(out PipeFrame frame);
+        /// <summary>
+        /// Attempts to connect to the pipe. 
+        /// <para>
+        /// If 0-9 is passed to pipe, it should only try to connect to the specified pipe.
+        /// If -1 is passed, the pipe will find the first available pipe.
+        /// </para>
+        /// </summary>
+        /// <param name="pipe">
+        /// If -1 is passed, the pipe will find the first available pipe,
+        /// otherwise it connects to the pipe that was supplied.
+        /// </param>
+        /// <returns></returns>
+        bool Connect(int pipe);
+
+        /// <summary>
+        /// Reads a frame if there is one available.
+        /// Returns <see langword="false"/> if there is none. 
+        /// <para>This should be non blocking (aka use a Peek first).</para>
+        /// </summary>
+        /// <param name="frame">The frame that has been read.</param>
+        /// <returns>Returns true if a frame has been read, otherwise false.</returns>
+        bool ReadFrame(out PipeFrame frame);
 
 		/// <summary>
 		/// Writes the frame to the pipe. Returns false if any errors occur.
@@ -48,9 +56,8 @@ namespace DiscordRPC.IO
 		bool WriteFrame(PipeFrame frame);
 		
 		/// <summary>
-		/// Closes the connection
+		/// Closes the pipe connection.
 		/// </summary>
 		void Close();
-        
 	}
 }

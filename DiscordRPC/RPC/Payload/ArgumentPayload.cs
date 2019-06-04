@@ -1,41 +1,44 @@
-﻿using DiscordRPC.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DiscordRPC.RPC.Payload
 {
 	/// <summary>
-	/// The payload that is sent by the client to discord for events such as setting the rich presence.
-	/// <para>
-	/// SetPrecense
-	/// </para>
+	/// The payload that is sent by the client to Discord for events such as setting the rich presence.
+	/// <para> SetPrecense </para>
 	/// </summary>
 	internal class ArgumentPayload : PayloadBase
 	{
 		/// <summary>
-		/// The data the server sent too us
+		/// Gets or sets the data the server sent too us.
 		/// </summary>
 		[JsonProperty("args", NullValueHandling = NullValueHandling.Ignore)]
 		public JObject Arguments { get; set; }
 		
-		public ArgumentPayload() : base() { Arguments = null; }
-		public ArgumentPayload(long nonce) : base(nonce) { Arguments = null; }
+		public ArgumentPayload() : base()
+        {
+        }
+
+		public ArgumentPayload(long nonce) : base(nonce)
+        {
+        }
+
 		public ArgumentPayload(object args, long nonce) : base(nonce)
 		{
-			SetObject(args);
+			SetArgumentData(args);
 		}
 
 		/// <summary>
-		/// Sets the obejct stored within the data.
+		/// Creates and sets the argument <see cref="JObject"/> from an <see cref="object"/>.
 		/// </summary>
 		/// <param name="obj"></param>
-		public void SetObject(object obj)
+		public void SetArgumentData(object obj)
 		{
 			Arguments = JObject.FromObject(obj);
 		}
 
 		/// <summary>
-		/// Gets the object stored within the Data
+		/// Gets the <see cref="object"/> stored within the argument <see cref="JObject"/>.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>

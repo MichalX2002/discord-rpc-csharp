@@ -1,23 +1,25 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DiscordRPC.RPC.Payload
 {
 	internal class ClosePayload : PayloadBase
 	{
 		/// <summary>
-		/// The close code the discord gave us
+		/// Gets the close code the Discord gave us.
 		/// </summary>
 		[JsonProperty("code")]
-		public int Code { get; set; }
+		public int Code { get; }
 
 		/// <summary>
-		/// The close reason discord gave us
+		/// Gets the close reason Discord gave us.
 		/// </summary>
 		[JsonProperty("message")]
-		public string Reason { get; set; }
-	}
+		public string Reason { get; }
+
+        public ClosePayload(int code, string reason)
+        {
+            Code = code;
+            Reason = reason;
+        }
+    }
 }

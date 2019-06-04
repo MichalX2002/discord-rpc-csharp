@@ -42,12 +42,12 @@ Exec={1} %u
 Type=Application
 NoDisplay=true
 Categories=Discord;Games;
-MimeType=x-scheme-handler/discord-{2}";
+MimeType=x-scheme-handler/Discord-{2}";
             
             string file = string.Format(desktopFileFormat, register.ApplicationID, command, register.ApplicationID);
 
             //Prepare the path
-            string filename = "/discord-" + register.ApplicationID + ".desktop";
+            string filename = "/Discord-" + register.ApplicationID + ".desktop";
             string filepath = home + "/.local/share/applications";
             var directory = Directory.CreateDirectory(filepath);
             if (!directory.Exists)
@@ -71,7 +71,7 @@ MimeType=x-scheme-handler/discord-{2}";
         private bool RegisterMime(string appid)
         {
             //Format the arguments
-            string format = "default discord-{0}.desktop x-scheme-handler/discord-{0}";
+            string format = "default Discord-{0}.desktop x-scheme-handler/Discord-{0}";
             string arguments = string.Format(format, appid);
 
             //Run the process and wait for response

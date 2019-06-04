@@ -3,31 +3,41 @@
 namespace DiscordRPC.Message
 {
 	/// <summary>
-	/// Created when a error occurs within the ipc and it is sent to the client.
+	/// Created when a error occurs within the IPC and it is sent to the client.
 	/// </summary>
 	public class ErrorMessage : MessageBase
 	{
         /// <summary>
-        /// The type of message received from discord
+        /// Gets the type of message received from Discord.
         /// </summary>
         public override MessageType Type => MessageType.Error;
 
         /// <summary>
-        /// The Discord error code.
+        /// Gets the Discord error code.
         /// </summary>
         [JsonProperty("code")]
-		public ErrorCode Code { get; internal set; }
+		public ErrorCode Code { get; }
 
 		/// <summary>
-		/// The message associated with the error code.
+		/// Gets the message associated with the error code.
 		/// </summary>
 		[JsonProperty("message")]
-		public string Message { get; internal set; }
+		public string Message { get; }
 
-	}
+        /// <summary>
+        /// Constructs an error message from a code and detailed message.
+        /// </summary>
+        /// <param name="code">The Discord error code.</param>
+        /// <param name="message">The detailed message associated with the code.</param>
+        public ErrorMessage(ErrorCode code, string message)
+        {
+            Code = code;
+            Message = message;
+        }
+    }
 
 	/// <summary>
-	/// The error message received by discord. See https://discordapp.com/developers/docs/topics/rpc#rpc-server-payloads-rpc-errors for documentation
+	/// The error message received by Discord. See https://discordapp.com/developers/docs/topics/rpc#rpc-server-payloads-rpc-errors for documentation
 	/// </summary>
 	public enum ErrorCode
 	{

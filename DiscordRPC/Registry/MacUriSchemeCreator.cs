@@ -32,7 +32,7 @@ namespace DiscordRPC.Registry
             else logger.Warning("This library does not fully support MacOS URI Scheme Registration.");
 
             //get the folder ready
-            string filepath = "~/Library/Application Support/discord/games";
+            string filepath = "~/Library/Application Support/Discord/games";
             var directory = Directory.CreateDirectory(filepath);
             if (!directory.Exists)
             {

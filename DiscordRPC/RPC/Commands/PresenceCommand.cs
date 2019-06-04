@@ -9,13 +9,19 @@ namespace DiscordRPC.RPC.Commands
 		/// The process ID
 		/// </summary>
 		[JsonProperty("pid")]
-		public int PID { get; set; }
+		public int PID { get; }
 
 		/// <summary>
 		/// The rich presence to be set. Can be null.
 		/// </summary>
 		[JsonProperty("activity")]
-		public RichPresence Presence { get; set; }
+		public RichPresence Presence { get; }
+
+        public PresenceCommand(int pid, RichPresence presence)
+        {
+            PID = pid;
+            Presence = presence;
+        }
 
 		public PayloadBase PreparePayload(long nonce)
 		{

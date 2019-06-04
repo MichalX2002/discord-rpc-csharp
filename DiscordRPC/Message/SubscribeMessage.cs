@@ -3,17 +3,17 @@
 namespace DiscordRPC.Message
 {
 	/// <summary>
-	/// Called as validation of a subscribe
+	/// Called as validation of a subscribe.
 	/// </summary>
 	public class SubscribeMessage : MessageBase
 	{
         /// <summary>
-        /// The type of message received from discord
+        /// Gets the type of message received from Discord.
         /// </summary>
         public override MessageType Type => MessageType.Subscribe;
 
         /// <summary>
-        /// The event that was subscribed too.
+        /// Gets the event that was subscribed to.
         /// </summary>
         public EventType Event { get; internal set; }
 		

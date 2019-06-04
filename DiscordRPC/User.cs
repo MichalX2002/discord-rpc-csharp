@@ -16,27 +16,30 @@ namespace DiscordRPC
 		/// </summary>
 		public enum AvatarFormat
 		{
-			/// <summary>
-			/// Portable Network Graphics format (.png)
-			/// <para>Losses format that supports transparent avatars. Most recommended for stationary formats with wide support from many libraries.</para>
-			/// </summary>
-			PNG,
+            /// <summary>
+            /// Portable Network Graphics format (.png)
+            /// <para>
+            /// Lossless format that supports transparency.
+            /// Mostly recommended for stationary formats with wide support from many libraries.
+            /// </para>
+            /// </summary>
+            PNG,
 
-			/// <summary>
-			/// Joint Photographic Experts Group format (.jpeg)
-			/// <para>The format most cameras use. Lossy and does not support transparent avatars.</para>
-			/// </summary>
-			JPEG,
+            /// <summary>
+            /// Joint Photographic Experts Group format (.jpeg)
+            /// <para>The format most cameras use. Lossy and does not support transparency.</para>
+            /// </summary>
+            JPEG,
 
 			/// <summary>
 			/// WebP format (.webp)
-			/// <para>Picture only version of WebM. Pronounced "weeb p".</para>
+			/// <para>Picture only version of WebM. Lossy/lossless and supports transparency.</para>
 			/// </summary>
 			WebP,
 
 			/// <summary>
 			/// Graphics Interchange Format (.gif)
-			/// <para>If you pronounce it .jif, you need to re-evaluate your life choices.</para>
+			/// <para>Animated avatar accessible only to Nitro users.</para>
 			/// </summary>
 			GIF
 		}
@@ -48,18 +51,25 @@ namespace DiscordRPC
 		{
 			/// <summary> 16 x 16 pixels.</summary>
 			x16 = 16,
+
 			/// <summary> 32 x 32 pixels.</summary>
 			x32 = 32,
+
 			/// <summary> 64 x 64 pixels.</summary>
 			x64 = 64,
+
 			/// <summary> 128 x 128 pixels.</summary>
 			x128 = 128,
+
 			/// <summary> 256 x 256 pixels.</summary>
 			x256 = 256,
+
 			/// <summary> 512 x 512 pixels.</summary>
 			x512 = 512,
+
 			/// <summary> 1024 x 1024 pixels.</summary>
 			x1024 = 1024,
+
 			/// <summary> 2048 x 2048 pixels.</summary>
 			x2048 = 2048
 		}
@@ -82,44 +92,58 @@ namespace DiscordRPC
 		[JsonProperty("discriminator")]
 		public int Discriminator { get; set; }
 
-		/// <summary>
-		/// The avatar hash of the user. Too get a URI for the avatar, use the <see cref="GetAvatarURL(AvatarFormat, AvatarSize)"/>. This can be null if the user has no avatar. The <see cref="GetAvatarURL(AvatarFormat, AvatarSize)"/> will account for this and return the discord default.
-		/// </summary>
-		[JsonProperty("avatar")]
+        /// <summary>
+        /// The avatar hash of the user. 
+        /// To get a URI for the avatar, use <see cref="GetAvatarURL(AvatarFormat, AvatarSize)"/>.
+        /// <para>
+        /// This can be <see langword="null"/> if the user has no avatar. 
+        /// <see cref="GetAvatarURL(AvatarFormat, AvatarSize)"/> will account for this and return the Discord default.
+        /// </para>
+        /// </summary>
+        [JsonProperty("avatar")]
 		public string Avatar { get; set; }
 
-		/// <summary>
-		/// The endpoint for the CDN. Normally cdn.discordapp.com
-		/// </summary>
-		public string CdnEndpoint { get => _cdn; private set => _cdn = value; }
-        private string _cdn = "cdn.discordapp.com";
+        /// <summary>
+        /// The endpoint for the CDN. 
+        /// <para>"cdn.discordapp.com" by default.</para>
+        /// </summary>
+        public string CdnEndpoint { get; private set; } = "cdn.discordapp.com";
 
-		/// <summary>
-		/// Updates the URL paths to the appropriate configuration
-		/// </summary>
-		/// <param name="configuration">The configuration received by the OnReady event.</param>
-		internal void SetConfiguration(Configuration configuration)
+        /// <summary>
+        /// Updates the URL paths to the appropriate configuration
+        /// </summary>
+        /// <param name="configuration">The configuration received by the OnReady event.</param>
+        internal void SetConfiguration(Configuration configuration)
 		{
-			this._cdn = configuration.CdnHost;
+			CdnEndpoint = configuration.CdnHost;
 		}
 
-		/// <summary>
-		/// Gets a URL that can be used to download the user's avatar. If the user has not yet set their avatar, it will return the default one that discord is using. The default avatar only supports the <see cref="AvatarFormat.PNG"/> format.
-		/// </summary>
-		/// <param name="format">The format of the target avatar</param>
-		/// <param name="size">The optional size of the avatar you wish for. Defaults to x128.</param>
-		/// <returns></returns>
-		public string GetAvatarURL(AvatarFormat format, AvatarSize size = AvatarSize.x128)
+        /// <summary>
+        /// Gets if the user has the default avatar.
+        /// </summary>
+        public bool HasDefaultAvatar => string.IsNullOrEmpty(Avatar);
+
+        /// <summary>
+        /// Gets a URL that can be used to download the user's avatar.
+        /// If the user has not yet set their avatar, it will return the default one that Discord is using. 
+        /// <para>The default avatar is only available in the <see cref="AvatarFormat.PNG"/> format.</para>
+        /// </summary>
+        /// <param name="format">The format of the target avatar</param>
+        /// <param name="size">The optional size of the avatar you wish for. Defaults to x128.</param>
+        /// <returns></returns>
+        public string GetAvatarURL(AvatarFormat format, AvatarSize size = AvatarSize.x128)
 		{
 			//Prepare the endpoint
 			string endpoint = "/avatars/" + ID + "/" + Avatar;
 
 			//The user has no avatar, so we better replace it with the default
-			if (string.IsNullOrEmpty(Avatar))
+			if (HasDefaultAvatar)
 			{
 				//Make sure we are only using PNG
 				if (format != AvatarFormat.PNG)
-					throw new BadImageFormatException("The user has no avatar and the requested format " + format.ToString() + " is not supported. (Only supports PNG).");
+					throw new BadImageFormatException(
+                        "The user has the default avatar and the requested format " + format.ToString() + 
+                        " is not supported. Default avatars are only available in the PNG format.");
 
 				//Get the endpoint
 				int descrim = Discriminator % 5;
@@ -127,7 +151,7 @@ namespace DiscordRPC
 			}
 
 			//Finish of the endpoint
-			return string.Format("https://{0}{1}{2}?size={3}", this.CdnEndpoint, endpoint, GetAvatarExtension(format), (int)size);
+			return string.Format("https://{0}{1}{2}?size={3}", CdnEndpoint, endpoint, GetAvatarExtension(format), (int)size);
 		}
 
 		/// <summary>
@@ -141,7 +165,7 @@ namespace DiscordRPC
 		}
 
 		/// <summary>
-		/// Formats the user into username#discriminator
+		/// Formats the user information into username#discriminator
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString()

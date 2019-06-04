@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DiscordRPC.RPC.Payload;
+﻿using DiscordRPC.RPC.Payload;
 using Newtonsoft.Json;
 
 namespace DiscordRPC.RPC.Commands
@@ -13,13 +9,23 @@ namespace DiscordRPC.RPC.Commands
 		/// The process ID
 		/// </summary>
 		[JsonProperty("pid")]
-		public int PID { get; set; }
+		public int PID { get; }
 
 		/// <summary>
 		/// The rich presence to be set. Can be null.
 		/// </summary>
 		[JsonProperty("close_reason")]
-		public string value = "Unity 5.5 doesn't handle thread aborts. Can you please close me discord?";
+        public string CloseReason { get; }
+
+        public CloseCommand(int pid, string closeReason)
+        {
+            PID = pid;
+            CloseReason = closeReason ?? "Unity 5.5 doesn't handle thread aborts. Can you please close me Discord?";
+        }
+
+        public CloseCommand() : this(0, null)
+        {
+        }
 
 		public PayloadBase PreparePayload(long nonce)
 		{

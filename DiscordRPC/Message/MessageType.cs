@@ -47,17 +47,17 @@ namespace DiscordRPC.Message
 		Spectate,
 
 		/// <summary>
-		/// Another discord user requests permission to join this game.
+		/// Another Discord user requests permission to join this game.
 		/// </summary>
 		JoinRequest,
 
 		/// <summary>
-		/// The connection to the discord client was succesfull. This is called before <see cref="Ready"/>.
+		/// The connection to the Discord client was succesfull. This is called before <see cref="Ready"/>.
 		/// </summary>
 		ConnectionEstablished,
 
 		/// <summary>
-		/// Failed to establish any connection with discord. Discord is potentially not running?
+		/// Failed to establish any connection with Discord. Discord is potentially not running?
 		/// </summary>
 		ConnectionFailed
 	}

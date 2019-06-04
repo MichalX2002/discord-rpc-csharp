@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 
 namespace DiscordRPC.Helper
@@ -8,13 +7,15 @@ namespace DiscordRPC.Helper
 	/// Collectin of helpful string extensions
 	/// </summary>
 	public static class StringTools
-	{
-		/// <summary>
-		/// Will return null if the string is whitespace, otherwise it will return the string. 
-		/// </summary>
-		/// <param name="str">The string to check</param>
-		/// <returns>Null if the string is empty, otherwise the string</returns>
-		public static string GetNullOrString(this string str)
+    {
+        private static readonly char[] CamelCaseSplitChars = new[] { '_', ' ' };
+
+        /// <summary>
+        /// Will return null if the string is whitespace, otherwise it will return the string. 
+        /// </summary>
+        /// <param name="str">The string to check</param>
+        /// <returns>Null if the string is empty, otherwise the string</returns>
+        public static string GetNullOrString(this string str)
 		{
 			return str.Length == 0 || string.IsNullOrEmpty(str.Trim()) ? null : str;
 		}
@@ -42,32 +43,54 @@ namespace DiscordRPC.Helper
 			return encoding.GetByteCount(str) <= bytes;
 		}
 
-		
-		/// <summary>
-		/// Converts the string into CamelCase (Pascal Case).
-		/// </summary>
-		/// <param name="str">The string to convert</param>
-		/// <returns></returns>
+        /// <summary>
+        /// Converts the string into CamelCase (Pascal Case).
+        /// </summary>
+        /// <param name="str">The string to convert</param>
+        /// <returns></returns>
         public static string ToCamelCase(this string str)
         {
-            if (str == null) return null;
-            
-            return str.ToLower()
-				.Split(new[] { "_", " " }, StringSplitOptions.RemoveEmptyEntries)
-				.Select(s => char.ToUpper(s[0]) + s.Substring(1, s.Length - 1))
-				.Aggregate(string.Empty, (s1, s2) => s1 + s2);
+            if (str == null)
+                return null;
+
+            var parts = str.ToLower().Split(CamelCaseSplitChars, StringSplitOptions.RemoveEmptyEntries);
+            var builder = new StringBuilder(str.Length);
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                builder.Append(char.ToUpper(part[0]));
+                builder.Append(part, 1, part.Length - 1);
+            }
+            return builder.ToString();
         }
 
 		/// <summary>
-		/// Converts the string into UPPER_SNAKE_CASE
+		/// Converts the string into UPPER_SNAKE_CASE.
 		/// </summary>
 		/// <param name="str">The string to convert</param>
 		/// <returns></returns>
         public static string ToSnakeCase(this string str)
         {
-            if (str == null) return null;
-			var concat = string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()).ToArray());
-			return concat.ToUpper();
+            if (str == null)
+                return null;
+
+            var builder = new StringBuilder((int)(str.Length * 1.1));
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (char.IsWhiteSpace(c))
+                {
+                    builder.Append("_");
+                    continue;
+                }
+
+                if (i > 0 && char.IsUpper(c) && !char.IsWhiteSpace(str[i - 1]))
+                    builder.Append("_");
+                builder.Append(char.ToUpper(c));
+            }
+            return builder.ToString();
         }
     }
 }

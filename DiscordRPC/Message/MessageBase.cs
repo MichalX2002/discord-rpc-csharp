@@ -3,12 +3,12 @@
 namespace DiscordRPC.Message
 {
 	/// <summary>
-	/// Messages received from discord.
+	/// Messages received from Discord.
 	/// </summary>
 	public abstract class MessageBase
 	{
 		/// <summary>
-		/// The type of message received from discord
+		/// The type of message received from Discord
 		/// </summary>
 		public abstract MessageType Type { get; }
 

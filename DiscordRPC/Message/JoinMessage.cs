@@ -1,8 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DiscordRPC.Message
 {
@@ -12,7 +8,7 @@ namespace DiscordRPC.Message
 	public class JoinMessage : MessageBase
 	{
         /// <summary>
-        /// The type of message received from discord
+        /// The type of message received from Discord
         /// </summary>
         public override MessageType Type => MessageType.Join;
 

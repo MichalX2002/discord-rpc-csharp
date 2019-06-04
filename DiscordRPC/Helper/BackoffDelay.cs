@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DiscordRPC.Helper
 {
-
 	internal class BackoffDelay
 	{
 		/// <summary>
@@ -21,30 +17,34 @@ namespace DiscordRPC.Helper
         /// <summary>
         /// The current time of the backoff
         /// </summary>
-        public int Current => _current;
-        private int _current;
+        public int Current { get; private set; }
 
         /// <summary>
         /// The current number of failures
         /// </summary>
-        public int Fails => _fails;
-        private int _fails;
+        public int Fails { get; private set; }
 
-		/// <summary>
-		/// The random generator
-		/// </summary>
-		public Random Random { get; set; }
+        /// <summary>
+        /// The random number generator.
+        /// </summary>
+        public Random Random { get; set; }
 
-		private BackoffDelay() { }
-		public BackoffDelay(int min, int max) : this(min, max, new Random()) { }
+		private BackoffDelay()
+        {
+        }
+
+		public BackoffDelay(int min, int max) : this(min, max, new Random())
+        {
+        }
+
 		public BackoffDelay(int min, int max, Random random)
 		{
-			this.Minimum = min;
-			this.Maximum = max;
+			Minimum = min;
+			Maximum = max;
 
-			this._current = min;
-			this._fails = 0;
-			this.Random = random;
+			Current = min;
+			Fails = 0;
+			Random = random;
 		}
 
 		/// <summary>
@@ -52,20 +52,19 @@ namespace DiscordRPC.Helper
 		/// </summary>
 		public void Reset()
 		{
-			_fails = 0;
-			_current = Minimum;
+			Fails = 0;
+			Current = Minimum;
 		}
 
 		public int NextDelay()
 		{
 			//Increment the failures
-			_fails++;
+			Fails++;
 
 			double diff = (Maximum - Minimum) / 100f;
-			_current = (int)Math.Floor(diff * _fails) + Minimum;
+			Current = (int)Math.Floor(diff * Fails) + Minimum;
 
-
-			return Math.Min(Math.Max(_current, Minimum), Maximum);
+			return Math.Min(Math.Max(Current, Minimum), Maximum);
 		}
 	}
 }

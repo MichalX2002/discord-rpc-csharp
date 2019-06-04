@@ -1,9 +1,10 @@
 ﻿namespace DiscordRPC.IO
 {
 	/// <summary>
-	/// The operation code that the <see cref="PipeFrame"/> was sent under. This defines the type of frame and the data to expect.
+	/// The operation code that the <see cref="PipeFrame"/> was sent under. 
+    /// This defines the type of frame and the data to expect.
 	/// </summary>
-	public enum Opcode : uint
+	public enum OpCode : uint
 	{
 		/// <summary>
 		/// Initial handshake frame

@@ -1,5 +1,4 @@
-﻿using DiscordRPC.Helper;
-using DiscordRPC.Message;
+﻿using DiscordRPC.Message;
 using DiscordRPC.IO;
 using DiscordRPC.RPC.Commands;
 using DiscordRPC.RPC.Payload;
@@ -9,33 +8,34 @@ using System.Threading;
 using Newtonsoft.Json;
 using DiscordRPC.Logging;
 using DiscordRPC.Events;
+using DiscordRPC.Helper;
 
 namespace DiscordRPC.RPC
 {
 	/// <summary>
-	/// Communicates between the client and discord through RPC
+	/// Communicates between the client and Discord through RPC.
 	/// </summary>
 	internal class RpcConnection : IDisposable
 	{
 		/// <summary>
 		/// Version of the RPC Protocol
 		/// </summary>
-		public static readonly int VERSION = 1;
+		public static readonly int Version = 1;
 
 		/// <summary>
-		/// The rate of poll to the discord pipe.
+		/// The rate of poll to the Discord pipe (in milliseconds).
 		/// </summary>
-		public static readonly int POLL_RATE = 1000;
+		public static readonly int PollRate = 1000;
 
 		/// <summary>
 		/// Should we send a null presence on the fairwells?
 		/// </summary>
-		private static readonly bool CLEAR_ON_SHUTDOWN = true;
+		private static readonly bool ClearOnShutdown = true;
 
 		/// <summary>
 		/// Should we work in a lock step manner? This option is semi-obsolete and may not work as expected.
 		/// </summary>
-		private static readonly bool LOCK_STEP = false;
+		private static readonly bool LockStep = false;
 
 		/// <summary>
 		/// The logger used by the RPC connection
@@ -137,8 +137,8 @@ namespace DiscordRPC.RPC
 			this.applicationID = applicationID;
 			this.processID = processID;
 			this.targetPipe = targetPipe;
-			this.namedPipe = client;
-			this.ShutdownOnly = true;
+			namedPipe = client;
+			ShutdownOnly = true;
 
 			//Assign a default logger
 			Logger = new ConsoleLogger();
@@ -161,7 +161,7 @@ namespace DiscordRPC.RPC
 
 		#region Queues
 		/// <summary>
-		/// Enqueues a command
+		/// Enqueues a command.
 		/// </summary>
 		/// <param name="command">The command to enqueue</param>
 		internal void EnqueueCommand(ICommand command)
@@ -169,7 +169,8 @@ namespace DiscordRPC.RPC
             Logger.Trace("Enqueue Command: " + command.GetType().FullName);
 
             //We cannot add anything else if we are aborting or shutting down.
-            if (aborting || shutdown) return;
+            if (aborting || shutdown)
+                return;
 
 			//Enqueue the set presence argument
 			lock (l_rtqueue)
@@ -309,29 +310,29 @@ namespace DiscordRPC.RPC
 								//Do some basic processing on the frame
 								switch (frame.Opcode)
 								{
-									//We have been told by discord to close, so we will consider it an abort
-									case Opcode.Close:
+									//We have been told by Discord to close, so we will consider it an abort
+									case OpCode.Close:
 
 										ClosePayload close = frame.GetObject<ClosePayload>();
-										Logger.Warning("We have been told to terminate by discord: ({0}) {1}", close.Code, close.Reason);
+										Logger.Warning("We have been told to terminate by Discord: ({0}) {1}", close.Code, close.Reason);
 										EnqueueMessage(new CloseMessage() { Code = close.Code, Reason = close.Reason });
 										mainloop = false;
 										break;
 
 									//We have pinged, so we will flip it and respond back with pong
-									case Opcode.Ping:					
+									case OpCode.Ping:					
 										Logger.Trace("PING");
-										frame.Opcode = Opcode.Pong;
+										frame.Opcode = OpCode.Pong;
 										namedPipe.WriteFrame(frame);
 										break;
 
 									//We have ponged? I have no idea if Discord actually sends ping/pongs.
-									case Opcode.Pong:															
+									case OpCode.Pong:															
 										Logger.Trace("PONG");
 										break;
 
 									//A frame has been sent, we should deal with that
-									case Opcode.Frame:					
+									case OpCode.Frame:					
 										if (shutdown)
 										{
 											//We are shutting down, so skip it
@@ -359,7 +360,7 @@ namespace DiscordRPC.RPC
 										
 
 									default:
-									case Opcode.Handshake:
+									case OpCode.Handshake:
 										//We have a invalid opcode, better terminate to be safe
 										Logger.Error("Invalid opcode: {0}", frame.Opcode);
 										mainloop = false;
@@ -375,7 +376,7 @@ namespace DiscordRPC.RPC
 								ProcessCommandQueue();
 
 								//Wait for some time, or until a command has been queued up
-								queueUpdatedEvent.WaitOne(POLL_RATE);
+								queueUpdatedEvent.WaitOne(PollRate);
 							}
 
 							#endregion
@@ -606,7 +607,7 @@ namespace DiscordRPC.RPC
 				}
 
 				//BReak out of the loop as soon as we send this item
-				if (shutdown || (!aborting && LOCK_STEP))
+				if (shutdown || (!aborting && LockStep))
 					needsWriting = false;
 				
 				//Prepare the payload
@@ -641,7 +642,7 @@ namespace DiscordRPC.RPC
 					else
 					{
 						//Prepare the frame
-						frame.SetObject(Opcode.Frame, payload);
+						frame.SetObject(OpCode.Frame, payload);
 
 						//Write it and if it wrote perfectly fine, we will dequeue it
 						Logger.Trace("Sending payload: " + payload.Command);
@@ -687,7 +688,7 @@ namespace DiscordRPC.RPC
 
 			//Send it off to the server
 			Logger.Trace("Sending Handshake...");				
-			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Handshake, new Handshake(VERSION, applicationID))))
+			if (!namedPipe.WriteFrame(new PipeFrame(OpCode.Handshake, new Handshake(Version, applicationID))))
 			{
 				Logger.Error("Failed to write a handshake.");
 				return;
@@ -712,7 +713,7 @@ namespace DiscordRPC.RPC
 			}
 			
 			//Send the handwave
-			if (!namedPipe.WriteFrame(new PipeFrame(Opcode.Close, new Handshake(VERSION, applicationID))))
+			if (!namedPipe.WriteFrame(new PipeFrame(OpCode.Close, new Handshake(Version, applicationID))))
 			{
 				Logger.Error("failed to write a handwave.");
 				return;
@@ -785,8 +786,8 @@ namespace DiscordRPC.RPC
 			lock(l_rtqueue)
 			{
 				_rtqueue.Clear();
-				if (CLEAR_ON_SHUTDOWN)
-                    _rtqueue.Enqueue(new PresenceCommand() { PID = processID, Presence = null });
+				if (ClearOnShutdown)
+                    _rtqueue.Enqueue(new PresenceCommand(processID, presence: null));
 				_rtqueue.Enqueue(new CloseCommand());
 			}
 
@@ -844,12 +845,12 @@ namespace DiscordRPC.RPC
 	internal enum RpcState
 	{
 		/// <summary>
-		/// Disconnected from the discord client
+		/// Disconnected from the Discord client
 		/// </summary>
 		Disconnected,
 		
 		/// <summary>
-		/// Connecting to the discord client. The handshake has been sent and we are awaiting the ready event
+		/// Connecting to the Discord client. The handshake has been sent and we are awaiting the ready event
 		/// </summary>
 		Connecting,
 

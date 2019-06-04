@@ -10,24 +10,24 @@ namespace DiscordRPC.Message
 	public class ReadyMessage : MessageBase
 	{
         /// <summary>
-        /// The type of message received from discord
+        /// Gets the type of message received from Discord.
         /// </summary>
         public override MessageType Type => MessageType.Ready;
 
         /// <summary>
-        /// The configuration of the connection
+        /// Gets or sets the configuration of the connection.
         /// </summary>
         [JsonProperty("config")]
 		public Configuration Configuration { get; set; }
 
 		/// <summary>
-		/// User the connection belongs too
+		/// Gets or sets the user the connection belongs to.
 		/// </summary>
 		[JsonProperty("user")]
 		public User User { get; set; }
 
 		/// <summary>
-		/// The version of the RPC
+		/// Gets or sets the version of the RPC.
 		/// </summary>
 		[JsonProperty("v")]
 		public int Version { get; set; }

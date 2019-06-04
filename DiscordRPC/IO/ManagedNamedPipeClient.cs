@@ -17,7 +17,7 @@ namespace DiscordRPC.IO
         /// <summary>
         /// Name format of the pipe
         /// </summary>
-		const string PIPE_NAME = @"discord-ipc-{0}";
+		const string PIPE_NAME = @"Discord-ipc-{0}";
 
         /// <summary>
         /// The logger for the Pipe client to use
@@ -42,7 +42,7 @@ namespace DiscordRPC.IO
         }
 
         /// <summary>
-        /// The pipe we are currently connected too.
+        /// The pipe we are currently connected to.
         /// </summary>
         public int ConnectedPipe => _connectedPipe;
 
@@ -89,7 +89,7 @@ namespace DiscordRPC.IO
                 {
                     if (AttemptConnection(i) || AttemptConnection(i, true))
                     {
-                        tBeginRead();
+                        BeginReadStream();
                         return true;
                     }
                 }
@@ -98,7 +98,7 @@ namespace DiscordRPC.IO
             //Attempt to connect to a specific pipe
             if (AttemptConnection(pipe) || AttemptConnection(pipe, true))
             {
-                tBeginRead();
+                BeginReadStream();
                 return true;
             }
 
@@ -157,7 +157,7 @@ namespace DiscordRPC.IO
         /// <summary>
         /// Starts a read. Can be executed in another thread.
         /// </summary>
-        private void tBeginRead()
+        private void BeginReadStream()
         {
             if (_isClosed) return;
             try
@@ -168,7 +168,7 @@ namespace DiscordRPC.IO
                     if (_stream == null || !_stream.IsConnected) return;
 
                     Logger.Trace("Begining Read of {0} bytes", _buffer.Length);
-                    _stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(tEndRead), _stream.IsConnected);
+                    _stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(EndReadStream), _stream.IsConnected);
                 }
             }
             catch (ObjectDisposedException)
@@ -193,7 +193,7 @@ namespace DiscordRPC.IO
         /// Ends a read. Can be executed in another thread.
         /// </summary>
         /// <param name="callback"></param>
-        private void tEndRead(IAsyncResult callback)
+        private void EndReadStream(IAsyncResult callback)
         {
             Logger.Trace("Ending Read");
             int bytes = 0;
@@ -271,7 +271,7 @@ namespace DiscordRPC.IO
             if (!_isClosed && IsConnected)
             {
                 Logger.Trace("Starting another read");
-                tBeginRead();
+                BeginReadStream();
             }
         }
 
@@ -406,7 +406,7 @@ namespace DiscordRPC.IO
             //Prevent double disposing
             if (_isDisposed) return;
 
-            //Close the stream (disposing of it too)
+            //Close the stream (disposing of it to)
             if (!_isClosed) Close();
 
             //Dispose of the stream if it hasnt been destroyed already.
@@ -423,6 +423,12 @@ namespace DiscordRPC.IO
             _isDisposed = true;
         }
 
+        /// <summary>
+        /// Gets the name of the pipe, resolving the complete path.
+        /// </summary>
+        /// <param name="pipe"></param>
+        /// <param name="sandbox"></param>
+        /// <returns></returns>
         private string GetPipeName(int pipe, string sandbox = "")
         {
             switch (Environment.OSVersion.Platform)
@@ -441,6 +447,11 @@ namespace DiscordRPC.IO
                     return Path.Combine(GetEnviromentTemp(), sandbox + string.Format(PIPE_NAME, pipe));
             }
         }
+
+        /// <summary>
+        /// Gets the name of the possible sandbox enviroment the pipe maybe in.
+        /// </summary>
+        /// <returns></returns>
         private string GetPipeSandbox()
         {
             switch (Environment.OSVersion.Platform)
@@ -448,10 +459,14 @@ namespace DiscordRPC.IO
                 default:
                     return null;
                 case PlatformID.Unix:
-                    return "snap.discord/";
+                    return "snap.Discord/";
             }
         }
 
+        /// <summary>
+        /// Gets the enviroment temporary path.
+        /// </summary>
+        /// <returns></returns>
         private string GetEnviromentTemp()
         {
             string temp = null;

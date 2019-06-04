@@ -63,7 +63,7 @@ namespace DiscordRPC.Events
 	public delegate void OnSpectateEvent(object sender, SpectateMessage args);
 
 	/// <summary>
-	/// Called when another discord user requests permission to join this game.
+	/// Called when another Discord user requests permission to join this game.
 	/// </summary>
 	/// <param name="sender">The Discord client handler that sent this event</param>
 	/// <param name="args">The arguments supplied with the event</param>
@@ -71,14 +71,14 @@ namespace DiscordRPC.Events
 
 
 	/// <summary>
-	/// The connection to the discord client was succesfull. This is called before <see cref="OnReadyEvent"/>.
+	/// The connection to the Discord client was succesfull. This is called before <see cref="OnReadyEvent"/>.
 	/// </summary>
 	/// <param name="sender">The Discord client handler that sent this event</param>
 	/// <param name="args">The arguments supplied with the event</param>
 	public delegate void OnConnectionEstablishedEvent(object sender, ConnectionEstablishedMessage args);
 
 	/// <summary>
-	/// Failed to establish any connection with discord. Discord is potentially not running?
+	/// Failed to establish any connection with Discord. Discord is potentially not running?
 	/// </summary>
 	/// <param name="sender">The Discord client handler that sent this event</param>
 	/// <param name="args">The arguments supplied with the event</param>

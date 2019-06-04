@@ -1,18 +1,20 @@
 ﻿
-
 namespace DiscordRPC.Message
 {
 	/// <summary>
-	/// Representation of the message received by discord when the presence has been updated.
+	/// Representation of the message received by Discord when the presence has been updated.
 	/// </summary>
 	public class PresenceMessage : MessageBase
 	{
         /// <summary>
-        /// The type of message received from discord
+        /// Gets the type of message received from Discord.
         /// </summary>
         public override MessageType Type => MessageType.PresenceUpdate;
 
-        internal PresenceMessage() : this(null) { }
+        internal PresenceMessage() : this(null)
+        {
+        }
+
 		internal PresenceMessage(RichPresenceResponse rpr)
 		{
 			if (rpr == null)
@@ -23,24 +25,24 @@ namespace DiscordRPC.Message
 			}
 			else
 			{
-				Presence = (RichPresence)rpr;
+				Presence = rpr;
 				Name = rpr.Name;
 				ApplicationID = rpr.ClientID;
 			}
 		}
 
 		/// <summary>
-		/// The rich presence Discord has set
+		/// Gets the rich presence Discord has set.
 		/// </summary>
 		public RichPresence Presence { get; internal set; }
 
 		/// <summary>
-		/// The name of the application Discord has set it for
+		/// Gets the name of the application Discord has set it for.
 		/// </summary>
 		public string Name { get; internal set; }
 
 		/// <summary>
-		/// The ID of the application discord has set it for
+		/// Gets the ID of the application Discord has set it for.
 		/// </summary>
 		public string ApplicationID { get; internal set; }
 	}

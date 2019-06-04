@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DiscordRPC.Logging
 {
@@ -16,33 +13,28 @@ namespace DiscordRPC.Logging
 		public LogLevel Level { get; set; }
 
 		/// <summary>
-		/// Should the output be coloured?
+		/// Gets or sets if the output should be colored.
 		/// </summary>
-		public bool Coloured { get; set; }
-		
-		/// <summary>
-		/// A alias too <see cref="Coloured"/>
-		/// </summary>
-		public bool Colored { get => Coloured; set => Coloured = value; }
+		public bool IsColored { get; set; }
 
         /// <summary>
         /// Creates a new instance of a Console Logger.
         /// </summary>
         public ConsoleLogger()
         {
-            this.Level = LogLevel.Info;
-            Coloured = false;
+            Level = LogLevel.Info;
+            IsColored = false;
         }
 
         /// <summary>
-        /// Creates a new instance of a Console Logger with a set log level
+        /// Creates a new instance of a Console Logger with a set log level.
         /// </summary>
         /// <param name="level"></param>
         /// <param name="coloured"></param>
         public ConsoleLogger(LogLevel level, bool coloured = false)
         {
             Level = level;
-            Coloured = coloured;
+            IsColored = coloured;
         }
 
         /// <summary>
@@ -52,48 +44,56 @@ namespace DiscordRPC.Logging
         /// <param name="args"></param>
         public void Trace(string message, params object[] args)
         {
-            if (Level > LogLevel.Trace) return;
+            if (Level > LogLevel.Trace)
+                return;
 
-            if (Coloured) Console.ForegroundColor = ConsoleColor.Gray;
+            if (IsColored)
+                Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("TRACE: " + message, args);
         }
 
         /// <summary>
-        /// Informative log messages
+        /// Informative log messages.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="args"></param>
         public void Info(string message, params object[] args)
 		{
-			if (Level > LogLevel.Info) return;
+			if (Level > LogLevel.Info)
+                return;
 
-			if (Coloured) Console.ForegroundColor = ConsoleColor.White;
+			if (IsColored)
+                Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine("INFO: " + message, args);
 		}
 
 		/// <summary>
-		/// Warning log messages
+		/// Warning log messages.
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="args"></param>
 		public void Warning(string message, params object[] args)
 		{
-			if (Level > LogLevel.Warning) return;
+			if (Level > LogLevel.Warning)
+                return;
 
-			if (Coloured) Console.ForegroundColor = ConsoleColor.Yellow;
+			if (IsColored)
+                Console.ForegroundColor = ConsoleColor.Yellow;
 			Console.WriteLine("WARN: " + message, args);
 		}
 
 		/// <summary>
-		/// Error log messsages
+		/// Error log messsages.
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="args"></param>
 		public void Error(string message, params object[] args)
 		{
-			if (Level > LogLevel.Error) return;
+			if (Level > LogLevel.Error)
+                return;
 
-			if (Coloured) Console.ForegroundColor = ConsoleColor.Red;
+			if (IsColored)
+                Console.ForegroundColor = ConsoleColor.Red;
 			Console.WriteLine("ERR : " + message, args);
 		}
 

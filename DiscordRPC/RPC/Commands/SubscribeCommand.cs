@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DiscordRPC.RPC.Payload;
+﻿using DiscordRPC.RPC.Payload;
 
 namespace DiscordRPC.RPC.Commands
 {
 	internal class SubscribeCommand : ICommand
 	{
-		public ServerEvent Event { get; set; }
-		public bool IsUnsubscribe { get; set; }
-		
-		public PayloadBase PreparePayload(long nonce)
+		public ServerEvent Event { get; }
+		public bool IsUnsubscribe { get; }
+
+        public SubscribeCommand(ServerEvent @event, bool isUnsubscribe)
+        {
+            Event = @event;
+            IsUnsubscribe = isUnsubscribe;
+        }
+
+        public PayloadBase PreparePayload(long nonce)
 		{
 			return new EventPayload(nonce)
 			{

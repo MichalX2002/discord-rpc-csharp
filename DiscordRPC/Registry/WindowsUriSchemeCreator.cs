@@ -28,7 +28,7 @@ namespace DiscordRPC.Registry
             }
 
             //Prepare the Scheme, Friendly name, default icon and default command
-            string scheme = "discord-" + register.ApplicationID;
+            string scheme = "Discord-" + register.ApplicationID;
             string friendlyName = "Run game " + register.ApplicationID + " protocol";
             string defaultIcon = location;
             string command = location;

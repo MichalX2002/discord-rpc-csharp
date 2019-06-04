@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace DiscordRPC.Message
 {
 	/// <summary>
@@ -12,7 +7,7 @@ namespace DiscordRPC.Message
 	public class SpectateMessage : JoinMessage
 	{
         /// <summary>
-        /// The type of message received from discord
+        /// Gets the type of message received from Discord.
         /// </summary>
         public override MessageType Type => MessageType.Spectate;
     }

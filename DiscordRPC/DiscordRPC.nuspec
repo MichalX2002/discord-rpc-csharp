@@ -12,18 +12,18 @@
 "Players love to show off what they are playing with Discord’s status feature. With Rich Presence you can add beautiful art and detailed information to show off your game even more. This lets players know what their friends are doing, so they can decide to ask to join in and play together." 
   - Discord
 
-This is an unoffical, non-discord supported library.
+This is an unoffical, non-Discord supported library.
     </description>
     <summary>Discord Rich Presence for your .NET project</summary>
     <license type="expression">MIT</license>
-    <projectUrl>https://github.com/Lachee/discord-rpc-csharp</projectUrl>
+    <projectUrl>https://github.com/Lachee/Discord-rpc-csharp</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright (c) Lachee 2018</copyright>
     <releaseNotes></releaseNotes>
     <tags>Discord Discord Rich Presence RPC Discord-RPC</tags>
 
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="11.0.1" />
+      <dependency id="Newtonsoft.Json" version="12.0.2" />
     </dependencies>
   </metadata>
 

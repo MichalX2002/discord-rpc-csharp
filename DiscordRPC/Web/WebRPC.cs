@@ -18,9 +18,9 @@ namespace DiscordRPC.Web
 		/// <summary>
 		/// Sets the Rich Presence over the HTTP protocol. Does not support Join / Spectate and by default is blocking.
 		/// </summary>
-		/// <param name="presence">The presence to send to discord</param>
+		/// <param name="presence">The presence to send to Discord</param>
 		/// <param name="applicationID">The ID of the application</param>
-		/// <param name="port">The port the discord client is currently on. Specify this for testing. Will start scanning from supplied port.</param>
+		/// <param name="port">The port the Discord client is currently on. Specify this for testing. Will start scanning from supplied port.</param>
 		/// <returns>Returns the rich presence result from the server. This can be null if presence was set to be null, or if there was no valid response from the client.</returns>
 		[System.Obsolete("Setting Rich Presence over HTTP is no longer supported by Discord. See offical Rich Presence github for more information.")]
 		public static RichPresence SetRichPresence(RichPresence presence, string applicationID, int port = 6463)
@@ -41,10 +41,10 @@ namespace DiscordRPC.Web
 		/// <summary>
 		/// Attempts to set the Rich Presence over the HTTP protocol. Does not support Join / Specate and by default is blocking.
 		/// </summary>
-		/// <param name="presence">The presence to send to discord</param>
+		/// <param name="presence">The presence to send to Discord</param>
 		/// <param name="response">The response object from the client</param>
 		/// <param name="applicationID">The ID of the application</param>
-		/// <param name="port">The port the discord client is currently on. Specify this for testing. Will start scanning from supplied port.</param>
+		/// <param name="port">The port the Discord client is currently on. Specify this for testing. Will start scanning from supplied port.</param>
 		/// <returns>True if the response was valid from the server, otherwise false.</returns>
 		[System.Obsolete("Setting Rich Presence over HTTP is no longer supported by Discord. See offical Rich Presence github for more information.")]
 		public static bool TrySetRichPresence(RichPresence presence, out RichPresence response, string applicationID, int port = 6463)
@@ -121,7 +121,7 @@ namespace DiscordRPC.Web
 		/// </summary>
 		/// <param name="presence">The rich presence to set.</param>
 		/// <param name="applicationID">The ID of the application the presence belongs too.</param>
-		/// <param name="port">The port the client is located on. The default port for the discord client is 6463, but it may move iteratively upto 6473 if the ports are unavailable.</param>
+		/// <param name="port">The port the client is located on. The default port for the Discord client is 6463, but it may move iteratively upto 6473 if the ports are unavailable.</param>
 		/// <returns>Returns a web request containing nessary data to make a POST request</returns>
 		[System.Obsolete("WebRequests are no longer supported because of the removed HTTP functionality by Discord. See offical Rich Presence github for more information.")]
 		public static WebRequest PrepareRequest(RichPresence presence, string applicationID, int port = 6463)
@@ -147,7 +147,7 @@ namespace DiscordRPC.Web
 
 			string json = JsonConvert.SerializeObject(payload);
 
-			string url = "http://127.0.0.1:" + port + "/rpc?v=" + RpcConnection.VERSION + "&client_id=" + applicationID;
+			string url = "http://127.0.0.1:" + port + "/rpc?v=" + RpcConnection.Version + "&client_id=" + applicationID;
 			return new WebRequest(url, json);
 		}
 	}

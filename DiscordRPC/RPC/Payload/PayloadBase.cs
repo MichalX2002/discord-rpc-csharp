@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace DiscordRPC.RPC.Payload
 {
     /// <summary>
-    /// Base Payload that is received by both client and server
+    /// Base of payloads that are received by both client and server.
     /// </summary>
     internal abstract class PayloadBase
 	{
@@ -20,7 +20,10 @@ namespace DiscordRPC.RPC.Payload
 		[JsonProperty("nonce")]
 		public string Nonce { get; set; }
 
-		protected PayloadBase() { }
+		protected PayloadBase()
+        {
+        }
+
         protected PayloadBase(long nonce)
 		{
 			Nonce = nonce.ToString();
